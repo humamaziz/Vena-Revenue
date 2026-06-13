@@ -2,62 +2,60 @@
 
 import Link from 'next/link'
 import AnimatedSection from '@/components/ui/AnimatedSection'
-import { motion } from 'framer-motion'
-
-const deliverables = [
-  'Complete 8-Pillar Revenue Diagnostic',
-  'AI search visibility gap analysis',
-  'Funnel friction & form audit',
-  'Competitor schema comparison',
-  'Intake automation assessment',
-  'Prioritized fix roadmap with ROI estimates',
-  'Delivered in 48 hours',
-  '2× ROI guarantee or full refund',
-]
 
 const tiers = [
   {
-    name: 'Entry Triage',
+    name: 'Entry Diagnostic',
     price: '$2,500',
-    target: 'Local businesses under $500K revenue',
-    pillars: '4 pillars',
+    target: 'Local owner-operated businesses (<$500K revenue)',
+    pillars: 'Top 4 Pillars scored report',
     delivery: '48 hours',
-    cta: 'Start Here',
+    note: null,
     featured: false,
     color: '#8892A4',
+    cta: 'Start Here',
   },
   {
-    name: 'Full Revenue Audit',
+    name: 'Full Revenue Intelligence Report',
     price: '$6,000',
-    target: 'Regional businesses $500K–$5M',
-    pillars: 'All 8 pillars',
+    target: 'Established regional businesses ($500K–$5M)',
+    pillars: 'All 8 Pillars + competitor intelligence + prioritized roadmap',
     delivery: '48 hours',
-    cta: 'Get the Audit',
+    note: '100% credited toward the $30K Mid-Market Build if signed within 14 days.',
     featured: true,
     color: '#00F5D4',
+    cta: 'Get the Report',
   },
   {
-    name: 'Enterprise ARE Audit',
-    price: '$12,000+',
-    target: 'Law firms, SaaS, Enterprise',
-    pillars: 'AI gap + schema + roadmap',
+    name: 'Premium ARE Audit',
+    price: '$12,000–$15,000',
+    target: 'Law firms, B2B SaaS, Enterprise clients',
+    pillars: 'AI search gap analysis + schema audit + 90-day implementation plan',
     delivery: '5 business days',
-    cta: 'Talk to Us',
+    note: '100% credited toward the $50K–$75K Enterprise Build if signed within 14 days.',
     featured: false,
     color: '#7B61FF',
+    cta: 'Talk to Us',
   },
+]
+
+const guarantee = [
+  'Every documented leak quantified in dollars',
+  'Prioritized 90-day fix roadmap',
+  '100% audit fee credited toward full build',
+  '2× ROI guarantee — or instant full refund',
+  'Delivered in 48 hours, no exceptions',
 ]
 
 export default function OfferSection() {
   return (
     <section className="section-padding relative overflow-hidden">
-      {/* Glowing center orb */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none"
         style={{ background: 'radial-gradient(ellipse, rgba(0,245,212,0.04) 0%, rgba(123,97,255,0.04) 50%, transparent 70%)' }} />
 
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection className="mb-4">
-          <span className="text-aqua text-xs font-bold tracking-[0.3em] uppercase">Chapter 04 — The Investment</span>
+          <span className="text-[#00F5D4] text-xs font-bold tracking-[0.3em] uppercase">Chapter 04 — The Investment</span>
         </AnimatedSection>
 
         <div className="grid lg:grid-cols-2 gap-16 items-center mb-20">
@@ -66,30 +64,29 @@ export default function OfferSection() {
               A complete diagnostic.{' '}
               <span className="gradient-text">Not a sales call.</span>
             </h2>
-            <p className="text-textMuted text-lg leading-relaxed mt-6">
-              We don't book calls to "learn more about your business." We show up with answers. The audit is the product — and it pays for itself before we even talk about the build.
+            <p className="text-[#8892A4] text-lg leading-relaxed mt-6">
+              We do not book calls to &quot;learn more about your business.&quot; We show up with answers. The audit is the product — and it pays for itself before we discuss the build. Every diagnostic fee is credited 100% toward the implementation if you sign within 14 days.
             </p>
           </AnimatedSection>
 
           <AnimatedSection delay={0.2}>
-            {/* Guarantee card */}
             <div className="relative rounded-2xl overflow-hidden">
               <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(0,245,212,0.08), rgba(123,97,255,0.08))' }} />
-              <div className="absolute inset-0 border border-aqua/20 rounded-2xl" />
+              <div className="absolute inset-0 border border-[#00F5D4]/20 rounded-2xl" />
               <div className="relative p-8">
                 <div className="text-4xl mb-4">🔒</div>
-                <h3 className="font-display font-bold text-xl text-textPrimary mb-3">The Radical Risk Reversal</h3>
-                <p className="text-textMuted leading-relaxed mb-6">
-                  If our audit doesn't map out at least <span className="text-aqua font-bold">2× its cost in hidden revenue leaks</span>, we refund the fee instantly. No questions, no friction.
+                <h3 className="font-display font-bold text-xl text-white mb-3">The Radical Risk Reversal</h3>
+                <p className="text-[#8892A4] leading-relaxed mb-6">
+                  If our audit does not map out at least <span className="text-[#00F5D4] font-bold">2× its cost in documented, recoverable revenue leaks</span>, we refund the fee instantly. No questions. No friction.
                 </p>
-                <div className="space-y-3">
-                  {deliverables.slice(0, 4).map((d) => (
-                    <div key={d} className="flex items-center gap-3 text-sm">
-                      <span className="text-aqua">✓</span>
-                      <span className="text-textMuted">{d}</span>
-                    </div>
+                <ul className="space-y-2">
+                  {guarantee.map((g) => (
+                    <li key={g} className="flex items-center gap-3 text-sm">
+                      <span className="text-[#00F5D4]">✓</span>
+                      <span className="text-[#8892A4]">{g}</span>
+                    </li>
                   ))}
-                </div>
+                </ul>
               </div>
             </div>
           </AnimatedSection>
@@ -100,51 +97,38 @@ export default function OfferSection() {
           {tiers.map((tier, i) => (
             <AnimatedSection key={tier.name} delay={i * 0.12}>
               <div className={`relative rounded-2xl h-full flex flex-col transition-all duration-500 hover:-translate-y-2 ${
-                tier.featured
-                  ? 'border border-aqua/30'
-                  : 'glass border border-white/[0.06]'
+                tier.featured ? 'border border-[#00F5D4]/30' : 'glass border border-white/[0.06]'
               }`}>
                 {tier.featured && (
                   <>
                     <div className="absolute inset-0 rounded-2xl" style={{ background: 'linear-gradient(135deg, rgba(0,245,212,0.06), rgba(123,97,255,0.06))' }} />
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-aqua text-bg text-xs font-bold px-4 py-1 rounded-full">
-                      Most Popular
-                    </div>
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00F5D4] text-[#0B0F1A] text-xs font-bold px-4 py-1 rounded-full">Most Popular</div>
                   </>
                 )}
-
                 <div className="relative p-8 flex flex-col h-full">
                   <div className="mb-6">
-                    <div className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: tier.color }}>
-                      {tier.name}
-                    </div>
-                    <div className="font-display font-bold text-4xl text-textPrimary">{tier.price}</div>
-                    <div className="text-textMuted text-sm mt-1">{tier.target}</div>
+                    <div className="text-xs font-bold tracking-widest uppercase mb-2" style={{ color: tier.color }}>{tier.name}</div>
+                    <div className="font-display font-bold text-3xl text-white">{tier.price}</div>
+                    <div className="text-[#8892A4] text-sm mt-1">{tier.target}</div>
                   </div>
-
-                  <div className="space-y-3 mb-8 flex-1">
-                    <div className="flex items-center gap-3 text-sm">
-                      <span style={{ color: tier.color }}>✓</span>
-                      <span className="text-textMuted">{tier.pillars} audited</span>
+                  <div className="space-y-3 mb-6 flex-1">
+                    <div className="flex items-start gap-2 text-sm">
+                      <span className="mt-0.5" style={{ color: tier.color }}>✓</span>
+                      <span className="text-[#8892A4]">{tier.pillars}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-sm">
+                    <div className="flex items-center gap-2 text-sm">
                       <span style={{ color: tier.color }}>✓</span>
-                      <span className="text-textMuted">Delivered in {tier.delivery}</span>
+                      <span className="text-[#8892A4]">Delivered in {tier.delivery}</span>
                     </div>
-                    <div className="flex items-center gap-3 text-sm">
+                    <div className="flex items-center gap-2 text-sm">
                       <span style={{ color: tier.color }}>✓</span>
-                      <span className="text-textMuted">2× ROI guarantee</span>
+                      <span className="text-[#8892A4]">2× ROI guarantee</span>
                     </div>
-                    <div className="flex items-center gap-3 text-sm">
-                      <span style={{ color: tier.color }}>✓</span>
-                      <span className="text-textMuted">Credited toward full build</span>
-                    </div>
+                    {tier.note && (
+                      <div className="mt-3 pt-3 border-t border-white/[0.06] text-xs text-[#8892A4] italic">{tier.note}</div>
+                    )}
                   </div>
-
-                  <Link
-                    href="/contact"
-                    className={tier.featured ? 'btn-primary text-center justify-center' : 'btn-ghost text-center justify-center'}
-                  >
+                  <Link href="/contact" className={tier.featured ? 'btn-primary text-center justify-center' : 'btn-ghost text-center justify-center'}>
                     <span>{tier.cta} →</span>
                   </Link>
                 </div>
@@ -153,14 +137,13 @@ export default function OfferSection() {
           ))}
         </div>
 
-        {/* Urgency strip */}
         <AnimatedSection delay={0.3} className="mt-8">
-          <div className="glass border border-pink/10 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="glass border border-[#FF4D6D]/10 rounded-xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <span className="w-2 h-2 rounded-full bg-pink animate-pulse" />
-              <span className="text-textMuted text-sm">
-                We cap audits at <span className="text-textPrimary font-semibold">10 per month</span> to ensure 48-hour delivery. Currently{' '}
-                <span className="text-pink font-bold">2 slots remaining.</span>
+              <span className="w-2 h-2 rounded-full bg-[#FF4D6D] animate-pulse" />
+              <span className="text-[#8892A4] text-sm">
+                We cap audits at <span className="text-white font-semibold">10 per month</span> to guarantee 48-hour delivery. Currently{' '}
+                <span className="text-[#FF4D6D] font-bold">2 slots remaining.</span>
               </span>
             </div>
             <Link href="/contact" className="btn-primary text-sm py-2.5 px-6 whitespace-nowrap">

@@ -4,14 +4,13 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import ScrollProgress from '@/components/ui/ScrollProgress'
 
 const navLinks = [
   { href: '/', label: 'Home' },
   { href: '/services', label: 'Services' },
   { href: '/projects', label: 'Projects' },
   { href: '/about', label: 'About' },
-  { href: '/contact', label: 'Contact' },
+  { href: '/client', label: 'Client Portal' },
 ]
 
 export default function Navbar() {
@@ -21,13 +20,12 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40)
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
     <>
-      <ScrollProgress />
       <motion.header
         initial={{ y: -80, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
@@ -37,69 +35,47 @@ export default function Navbar() {
         }`}
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="group flex items-center gap-2">
-            <div className="relative">
-              <span className="font-display font-bold text-xl text-textPrimary tracking-tight">
-                Vena
-              </span>
-              <span className="font-display font-bold text-xl" style={{ color: '#FFD700' }}>
-                %
-              </span>
-              <span className="font-display font-bold text-xl text-textPrimary tracking-tight">
-                Revenue
-              </span>
-            </div>
+          <Link href="/" className="flex items-center">
+            <span className="font-display font-bold text-xl text-white tracking-tight">Vena</span>
+            <span className="font-display font-bold text-xl" style={{ color: '#FFD700' }}>%</span>
+            <span className="font-display font-bold text-xl text-white tracking-tight">Revenue</span>
           </Link>
 
-          {/* Desktop Nav */}
           <nav className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={`text-sm font-medium transition-colors duration-200 relative group ${
-                  pathname === link.href ? 'text-aqua' : 'text-textMuted hover:text-textPrimary'
+                  pathname === link.href ? 'text-[#00F5D4]' : 'text-[#8892A4] hover:text-white'
                 }`}
               >
                 {link.label}
-                <span className={`absolute -bottom-1 left-0 h-px bg-gradient-to-r from-aqua to-purple transition-all duration-300 ${
+                <span className={`absolute -bottom-1 left-0 h-px bg-gradient-to-r from-[#00F5D4] to-[#7B61FF] transition-all duration-300 ${
                   pathname === link.href ? 'w-full' : 'w-0 group-hover:w-full'
                 }`} />
               </Link>
             ))}
           </nav>
 
-          {/* CTA */}
           <div className="hidden md:flex items-center gap-4">
             <Link href="/contact" className="btn-primary text-sm py-2.5 px-5">
               <span>Get Your Audit →</span>
             </Link>
           </div>
 
-          {/* Mobile hamburger */}
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
             className="md:hidden flex flex-col gap-1.5 p-2"
             aria-label="Toggle menu"
           >
-            <motion.span
-              animate={mobileOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }}
-              className="block w-6 h-0.5 bg-textPrimary"
-            />
-            <motion.span
-              animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }}
-              className="block w-6 h-0.5 bg-textPrimary"
-            />
-            <motion.span
-              animate={mobileOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }}
-              className="block w-6 h-0.5 bg-textPrimary"
-            />
+            <motion.span animate={mobileOpen ? { rotate: 45, y: 8 } : { rotate: 0, y: 0 }} className="block w-6 h-0.5 bg-white" />
+            <motion.span animate={mobileOpen ? { opacity: 0 } : { opacity: 1 }} className="block w-6 h-0.5 bg-white" />
+            <motion.span animate={mobileOpen ? { rotate: -45, y: -8 } : { rotate: 0, y: 0 }} className="block w-6 h-0.5 bg-white" />
           </button>
         </div>
       </motion.header>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
@@ -110,28 +86,17 @@ export default function Navbar() {
             className="fixed inset-0 z-[99] glass-strong flex flex-col items-center justify-center gap-8"
           >
             {navLinks.map((link, i) => (
-              <motion.div
-                key={link.href}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.08 }}
-              >
+              <motion.div key={link.href} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.08 }}>
                 <Link
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className={`font-display text-3xl font-bold ${
-                    pathname === link.href ? 'gradient-text' : 'text-textPrimary'
-                  }`}
+                  className={`font-display text-3xl font-bold ${pathname === link.href ? 'gradient-text' : 'text-white'}`}
                 >
                   {link.label}
                 </Link>
               </motion.div>
             ))}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
               <Link href="/contact" className="btn-primary mt-4" onClick={() => setMobileOpen(false)}>
                 <span>Get Your Audit →</span>
               </Link>

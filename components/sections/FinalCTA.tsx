@@ -6,15 +6,12 @@ import AnimatedSection from '@/components/ui/AnimatedSection'
 export default function FinalCTA() {
   return (
     <section className="section-padding relative overflow-hidden">
-      {/* Full-bleed gradient */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0"
-          style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(0,245,212,0.08) 0%, rgba(123,97,255,0.08) 50%, transparent 80%)' }} />
-      </div>
+      <div className="absolute inset-0 pointer-events-none"
+        style={{ background: 'radial-gradient(ellipse 80% 60% at 50% 100%, rgba(0,245,212,0.07) 0%, rgba(123,97,255,0.07) 50%, transparent 80%)' }} />
 
       <div className="max-w-4xl mx-auto px-6 text-center">
         <AnimatedSection className="mb-6">
-          <span className="text-aqua text-xs font-bold tracking-[0.3em] uppercase">The Decision Point</span>
+          <span className="text-[#00F5D4] text-xs font-bold tracking-[0.3em] uppercase">The Decision Point</span>
         </AnimatedSection>
 
         <AnimatedSection className="mb-8">
@@ -26,8 +23,11 @@ export default function FinalCTA() {
         </AnimatedSection>
 
         <AnimatedSection delay={0.2} className="mb-12">
-          <p className="text-textMuted text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
-            The businesses that win in the next 3 years won't be the ones with the biggest budgets. They'll be the ones with the most intelligent infrastructure. The audit starts at $1,500. The leaks we find are worth multiples of that.
+          <p className="text-[#8892A4] text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
+            The businesses that win in the next three years will not be the ones with the biggest budgets. They will be the ones with the most intelligent infrastructure. By 2027, AI will initiate 95% of seller research workflows. The question is not whether to adapt — it is whether you adapt before or after your competitors do.
+          </p>
+          <p className="text-[#8892A4] text-lg mt-4 max-w-2xl mx-auto">
+            The audit starts at <span className="text-white font-bold">$2,500</span>. The leaks we find are worth multiples of that. The full build is delivered in <span className="text-white font-bold">60–90 days</span>. The audit fee is credited 100% toward the build.
           </p>
         </AnimatedSection>
 
@@ -40,25 +40,36 @@ export default function FinalCTA() {
           </Link>
         </AnimatedSection>
 
-        {/* Trust badges */}
         <AnimatedSection delay={0.4}>
-          <div className="flex flex-wrap items-center justify-center gap-8 text-textMuted text-sm">
-            <div className="flex items-center gap-2">
-              <span className="text-aqua">✓</span>
-              <span>2× ROI guarantee</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-aqua">✓</span>
-              <span>48-hour delivery</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-aqua">✓</span>
-              <span>Full refund if underwhelmed</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-aqua">✓</span>
-              <span>No calendar links. No discovery calls.</span>
-            </div>
+          <div className="flex flex-wrap items-center justify-center gap-6 text-[#8892A4] text-sm">
+            {[
+              '2× ROI guarantee or instant refund',
+              '48-hour diagnostic delivery',
+              '100% fee credited toward build',
+              'No discovery calls — just answers',
+              '60–90 day full implementation',
+            ].map((item) => (
+              <div key={item} className="flex items-center gap-2">
+                <span className="text-[#00F5D4]">✓</span>
+                <span>{item}</span>
+              </div>
+            ))}
+          </div>
+        </AnimatedSection>
+
+        {/* Live Query CTA block */}
+        <AnimatedSection delay={0.5} className="mt-16">
+          <div className="glass border border-[#7B61FF]/20 rounded-2xl p-8">
+            <p className="text-[#8892A4] text-sm mb-3 uppercase tracking-widest font-bold">The Live Shadow Query</p>
+            <p className="text-white text-lg font-medium mb-2">
+              Right now, someone is typing into ChatGPT or Perplexity:
+            </p>
+            <p className="text-[#7B61FF] font-display font-bold text-xl mb-4">
+              &quot;Best [your service] in [your city]&quot;
+            </p>
+            <p className="text-[#8892A4]">
+              Three competitors appear. You do not. The audit finds out why — and maps the exact schema architecture that gets your name back in those results.
+            </p>
           </div>
         </AnimatedSection>
       </div>
