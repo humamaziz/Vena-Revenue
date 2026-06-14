@@ -53,14 +53,13 @@ export async function POST(req: NextRequest) {
     })
 
     // Return the PDF binary so the admin can download it directly
-    return new NextResponse(pdfBuffer, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="audit-${lead.name.replace(/\s+/g, '-')}.pdf"`,
-        'Content-Length': String(pdfBuffer.length),
-      },
-    })
+    return new NextResponse(new Uint8Array(pdfBuffer), {
+  status: 200,
+  headers: {
+    'Content-Type': 'application/pdf',
+    'Content-Disposition': 'attachment; filename="audit.pdf"',
+  },
+})
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
     console.error('[generate-pdf]', message)
