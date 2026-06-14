@@ -1,9 +1,10 @@
+// Updated model — llama3-70b-8192 and llama3-8b-8192 are decommissioned as of June 2026
 const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
-const MODEL = 'llama3-70b-8192'
+const MODEL = 'llama-3.3-70b-versatile'
 
 export async function callGroq(systemPrompt: string, userMessage: string): Promise<string> {
   const apiKey = process.env.GROQ_API_KEY
-  if (!apiKey) throw new Error('GROQ_API_KEY is not set')
+  if (!apiKey) throw new Error('GROQ_API_KEY is not set in environment variables')
 
   const res = await fetch(GROQ_API_URL, {
     method: 'POST',
@@ -13,7 +14,8 @@ export async function callGroq(systemPrompt: string, userMessage: string): Promi
     },
     body: JSON.stringify({
       model: MODEL,
-      max_tokens: 2000,
+      max_tokens: 2048,
+      temperature: 0.7,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userMessage },
@@ -27,7 +29,9 @@ export async function callGroq(systemPrompt: string, userMessage: string): Promi
   }
 
   const data = await res.json()
-  return data.choices?.[0]?.message?.content ?? ''
+  const content = data.choices?.[0]?.message?.content
+  if (!content) throw new Error('Groq returned empty content')
+  return content
 }
 
 export function buildAuditPrompt(lead: {
@@ -39,24 +43,35 @@ export function buildAuditPrompt(lead: {
   adspend?: string | null
   problem?: string | null
 }): string {
-  return `Analyze this business and provide a detailed revenue audit:
+  return `You are an elite Revenue Engineering analyst at Vena%Revenue. Analyze this business and produce a structured audit report.
 
-Business: ${lead.name}
-Website: ${lead.website}
-Industry: ${lead.industry}
-Goal: ${lead.goal}
-Monthly Revenue: ${lead.revenue ?? 'not provided'}
-Monthly Ad Spend: ${lead.adspend ?? 'not provided'}
-Main Challenge: ${lead.problem ?? 'not provided'}
+BUSINESS DETAILS:
+- Name: ${lead.name}
+- Website: ${lead.website}
+- Industry: ${lead.industry}
+- Primary Goal: ${lead.goal}
+- Monthly Revenue: ${lead.revenue ?? 'not provided'}
+- Monthly Ad Spend: ${lead.adspend ?? 'not provided'}
+- Main Challenge: ${lead.problem ?? 'not provided'}
 
-Provide:
-1. TOP 3 CONVERSION LEAKS — specific, named issues with their revenue impact
-2. UX/UI PROBLEMS — what is broken or creating friction on the site
-3. MESSAGING GAPS — where the copy fails to convert intent into action
-4. QUICK WINS — 3 things they can fix in under 2 weeks with estimated uplift
-5. REVENUE OPPORTUNITY — conservative estimate of recoverable revenue if all fixes are implemented
+Produce a complete Revenue Audit Report with these exact sections:
 
-Be specific, actionable, and direct. No generic advice. Reference their industry and situation.`
+1. TOP 3 CONVERSION LEAKS
+For each leak: name it, explain exactly how it's losing money, estimate the monthly revenue impact in dollars.
+
+2. UX / UI PROBLEMS
+Identify specific friction points in their web experience that are causing drop-off. Be concrete and reference their industry.
+
+3. MESSAGING GAPS
+Where does their copy fail to convert intent into action? What is missing from their positioning?
+
+4. QUICK WINS (Next 14 Days)
+List 3 specific changes they can implement immediately, each with an estimated revenue uplift.
+
+5. REVENUE OPPORTUNITY
+Conservative estimate: if all identified issues are fixed, what monthly revenue recovery is realistic? Show your reasoning.
+
+Be direct, specific, and actionable. No generic filler. Reference their industry norms and numbers. Write in confident, expert tone.`
 }
 
 export function buildScorePrompt(lead: {
@@ -67,17 +82,27 @@ export function buildScorePrompt(lead: {
   revenue?: string | null
   adspend?: string | null
 }): string {
-  return `Score this business lead for a revenue optimization agency:
+  return `You are a lead scoring expert at a premium revenue optimization agency. Score this inbound lead.
 
-Business: ${lead.name}
-Website: ${lead.website}
-Industry: ${lead.industry}
-Goal: ${lead.goal}
-Revenue: ${lead.revenue ?? 'unknown'}
-Ad Spend: ${lead.adspend ?? 'none'}
+LEAD DETAILS:
+- Business: ${lead.name}
+- Website: ${lead.website}
+- Industry: ${lead.industry}
+- Goal: ${lead.goal}
+- Monthly Revenue: ${lead.revenue ?? 'unknown'}
+- Monthly Ad Spend: ${lead.adspend ?? 'none'}
 
-Return ONLY valid JSON (no markdown, no code fences) with this exact shape:
-{"score": <number 0-100>, "priority": "<low|medium|high>", "reasoning": "<2 sentence explanation>"}`
+Score this lead from 0 to 100 based on:
+- Business size and revenue potential (are they big enough to have real leaks?)
+- Ad spend presence (do they have budget being wasted we can recover?)
+- Industry fit (law, medspa, SaaS, hospitality = high value)
+- Urgency signals (specific goal = ready to buy)
+- Likelihood to pay for a premium audit
+
+Classify priority as: low (0-40), medium (41-70), high (71-100)
+
+Respond with ONLY valid JSON, no markdown, no code fences, no explanation:
+{"score": <integer 0-100>, "priority": "<low|medium|high>", "reasoning": "<2 sentences explaining the score>"}`
 }
 
 export function buildFollowUpPrompt(lead: {
@@ -89,32 +114,38 @@ export function buildFollowUpPrompt(lead: {
 }): string {
   const history = lead.interactions
     .slice(-5)
-    .map((i) => `[${i.type} - ${i.createdAt.toDateString()}]: ${i.content.slice(0, 200)}`)
+    .map((i) => `[${i.type} — ${new Date(i.createdAt).toDateString()}]: ${i.content.slice(0, 300)}`)
     .join('\n')
 
-  return `Generate 3 follow-up email drafts for this lead:
+  return `You are an expert B2B sales copywriter for Vena%Revenue, a premium revenue engineering agency. Write 3 follow-up email bodies for this lead.
 
-Name: ${lead.name}
-Industry: ${lead.industry}
-Goal: ${lead.goal}
-Current Status: ${lead.status}
-Recent Interactions:
+LEAD:
+- Name: ${lead.name}
+- Industry: ${lead.industry}
+- Goal: ${lead.goal}
+- Current Status: ${lead.status}
+- Recent Interactions:
 ${history || 'None yet'}
 
-Generate:
-1. DAY 1 FOLLOW-UP — value-focused, reference their specific goal
-2. DAY 3 FOLLOW-UP — urgency + social proof angle
-3. DAY 7 FOLLOW-UP — objection handling + final push
+Write 3 follow-up email bodies (no subject lines, just the body text):
 
-Each draft should be 3–5 sentences, professional, and specific to their industry. Do not include subject lines. Just the email body for each.
+DAY 1 FOLLOW-UP:
+Value-focused. Reference their specific goal. Show you understand their exact pain point. 3-4 sentences max.
 
-Format as:
+DAY 3 FOLLOW-UP:
+Urgency angle + social proof from a similar industry client. Mention that audit slots are capped at 10/month. 3-4 sentences max.
+
+DAY 7 FOLLOW-UP:
+Handle the most likely objection (cost, timing, or "we have someone for that"). Final push. Be direct and confident. 3-4 sentences max.
+
+Format your response EXACTLY like this with these exact headers:
+
 DAY 1:
-<text>
+[email body]
 
 DAY 3:
-<text>
+[email body]
 
 DAY 7:
-<text>`
+[email body]`
 }

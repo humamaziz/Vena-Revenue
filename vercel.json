@@ -1,0 +1,19 @@
+{
+  "functions": {
+    "app/api/admin/generate-audit/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/admin/generate-pdf/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/admin/score-lead/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/admin/generate-followup/route.ts": {
+      "maxDuration": 30
+    },
+    "app/api/admin/send-email/route.ts": {
+      "maxDuration": 30
+    }
+  }
+}

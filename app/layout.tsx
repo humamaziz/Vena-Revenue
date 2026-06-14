@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter, Space_Grotesk } from 'next/font/google'
 import './globals.css'
-import Navbar from '@/components/layout/Navbar'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -27,12 +26,14 @@ export const metadata: Metadata = {
   },
 }
 
+// Root layout has NO Navbar — each route group adds its own layout.
+// (site)/* → gets Navbar via app/(site)/layout.tsx
+// /admin    → gets NO Navbar (bare layout, own full-screen UI)
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`}>
       <body className="bg-bg text-textPrimary font-body antialiased overflow-x-hidden">
-        <Navbar />
-        <main>{children}</main>
+        {children}
       </body>
     </html>
   )
