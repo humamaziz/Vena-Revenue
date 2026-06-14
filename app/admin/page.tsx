@@ -201,7 +201,11 @@ export default function AdminDashboard() {
 
   const scoreLead = async () => {
     if (!selected) return
-    const data = await callAdmin('score-lead', { leadId: selected.id }, 'Lead scored!')
+    const res = await callAdmin(
+  'score-lead',
+  { leadId: selected.id },
+  'Lead scored successfully'
+)
     if (data) {
       setSelected((prev) =>
         prev ? { ...prev, score: data.score as number, priority: data.priority as string } : prev
