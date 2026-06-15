@@ -3,8 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  directUrl         = env("DIRECT_URL")
 }
 
 model Lead {
@@ -34,7 +35,7 @@ model Lead {
   notes       String?
 
   lastContact DateTime?
-  createdAt   DateTime @default(now())
+  createdAt   DateTime  @default(now())
 
   interactions Interaction[]
 }
