@@ -10,7 +10,7 @@ const steps = [
   {
     id: 1,
     title: 'Who are you?',
-    subtitle: 'We research every submission before responding — this lets us show up with answers, not questions.',
+    subtitle: 'We research every submission before responding. This lets us show up with answers, not questions.',
     fields: [
       { name: 'name', label: 'Your Name', type: 'text', placeholder: 'First and last name' },
       { name: 'business', label: 'Business Name', type: 'text', placeholder: 'Company or practice name' },
@@ -43,7 +43,7 @@ const steps = [
 export default function ContactPage() {
   const [currentStep, setCurrentStep] = useState(0)
   const [formData, setFormData] = useState<Record<string, string>>({})
-  const [submitted, setSubmitted] = useState(false)
+  const [leadId, setLeadId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -51,9 +51,7 @@ export default function ContactPage() {
   const progress = ((currentStep + 1) / steps.length) * 100
 
   const handleField = (name: string, value: string) => setFormData((prev) => ({ ...prev, [name]: value }))
-
   const isStepValid = () => step.fields.every((f) => formData[f.name]?.trim())
-
   const handleNext = () => { if (isStepValid() && currentStep < steps.length - 1) setCurrentStep((s) => s + 1) }
   const handleBack = () => { if (currentStep > 0) setCurrentStep((s) => s - 1) }
 
@@ -69,7 +67,7 @@ export default function ContactPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Submission failed')
-      setSubmitted(true)
+      setLeadId(data.leadId)
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Something went wrong. Please try again.')
     } finally {
@@ -77,7 +75,8 @@ export default function ContactPage() {
     }
   }
 
-  if (submitted) {
+  // ── SUCCESS STATE ─────────────────────────────────────────
+  if (leadId) {
     return (
       <>
         <div className="min-h-screen flex items-center justify-center px-6 pt-20">
@@ -85,21 +84,38 @@ export default function ContactPage() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-            className="text-center max-w-lg"
+            className="text-center max-w-xl w-full"
           >
-            <div className="text-6xl mb-6">✅</div>
-            <h2 className="font-display font-bold text-4xl text-white mb-4">Brief received.</h2>
-            <p className="text-[#8892A4] text-lg leading-relaxed mb-8">
-              Our team is already researching <strong className="text-white">{formData.business}</strong>. Expect a 90-second Loom video from us within 24 hours showing exactly where the revenue is leaking - and what we would do about it.
+            <div className="text-5xl mb-6">✅</div>
+            <h2 className="font-display font-bold text-4xl text-white mb-3">Brief received.</h2>
+            <p className="text-[#8892A4] text-lg leading-relaxed mb-10">
+              Our team is already on it. You will receive a 90-second Loom video from us within 24 hours showing exactly where the revenue is leaking and what we would do about it.
             </p>
-            <div className="glass border border-[#00F5D4]/20 rounded-2xl p-6 mb-6">
-              <p className="text-[#8892A4] text-sm leading-relaxed">
-                <span className="text-[#00F5D4] font-semibold">What happens next:</span> No calendar link. No discovery call. We will send a personalized Loom walking through your primary revenue leak. You will have our full analysis before we speak.
-              </p>
+
+            {/* Payment CTA */}
+            <div className="glass border border-[#00F5D4]/20 rounded-2xl p-8 mb-6 text-left">
+              <div className="flex items-start gap-4 mb-5">
+                <div className="text-3xl">⚡</div>
+                <div>
+                  <h3 className="font-display font-bold text-xl text-white mb-1">Want your audit faster?</h3>
+                  <p className="text-[#8892A4] text-sm leading-relaxed">
+                    Pay now and move to the front of the queue. Your audit will be prioritized and delivered within 24 hours. The fee is 100% credited toward the full build if you sign within 14 days.
+                  </p>
+                </div>
+              </div>
+              <Link href={`/pay?leadId=${leadId}`} className="btn-primary w-full justify-center text-base py-3.5">
+                <span>Choose Your Audit Tier and Pay Now →</span>
+              </Link>
             </div>
-            <Link href="/client" className="btn-ghost text-sm py-2.5 px-6">
-              Track Your Audit Status →
-            </Link>
+
+            <div className="glass border border-white/[0.06] rounded-xl p-5 text-left">
+              <p className="text-[#8892A4] text-sm leading-relaxed">
+                <span className="text-white font-semibold">Prefer to wait?</span> No problem. We will send the Loom breakdown first and you can decide after seeing what we found. Track your status below.
+              </p>
+              <Link href="/client" className="inline-flex items-center gap-2 text-[#00F5D4] text-sm mt-3 hover:underline">
+                Track your audit status →
+              </Link>
+            </div>
           </motion.div>
         </div>
         <Footer />
@@ -107,6 +123,7 @@ export default function ContactPage() {
     )
   }
 
+  // ── FORM ─────────────────────────────────────────────────
   return (
     <>
       <div className="min-h-screen pt-32 pb-20 relative overflow-hidden">
@@ -161,7 +178,7 @@ export default function ContactPage() {
                         <select
                           value={formData[field.name] || ''}
                           onChange={(e) => handleField(field.name, e.target.value)}
-                          className="w-full bg-[#131823] border border-white/[0.08] rounded-xl px-4 py-3 text-white text-sm focus:border-[#00F5D4]/40 focus:outline-none transition-all duration-200"
+                          className="w-full bg-[#131823] border border-white/[0.08] rounded-xl px-4 py-3 text-white text-sm focus:border-[#00F5D4]/40 focus:outline-none"
                         >
                           <option value="" disabled>Select an option</option>
                           {field.options?.map((o) => <option key={o} value={o} className="bg-[#131823] text-white">{o}</option>)}
@@ -172,7 +189,7 @@ export default function ContactPage() {
                           placeholder={field.placeholder}
                           value={formData[field.name] || ''}
                           onChange={(e) => handleField(field.name, e.target.value)}
-                          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-white text-sm placeholder-[#8892A4] focus:border-[#00F5D4]/40 focus:outline-none transition-all duration-200 resize-none"
+                          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-white text-sm placeholder-[#8892A4] focus:border-[#00F5D4]/40 focus:outline-none resize-none"
                         />
                       ) : (
                         <input
@@ -180,7 +197,7 @@ export default function ContactPage() {
                           placeholder={field.placeholder}
                           value={formData[field.name] || ''}
                           onChange={(e) => handleField(field.name, e.target.value)}
-                          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-white text-sm placeholder-[#8892A4] focus:border-[#00F5D4]/40 focus:outline-none transition-all duration-200"
+                          className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl px-4 py-3 text-white text-sm placeholder-[#8892A4] focus:border-[#00F5D4]/40 focus:outline-none"
                         />
                       )}
                     </div>
@@ -191,15 +208,15 @@ export default function ContactPage() {
 
                 <div className="flex items-center justify-between mt-8">
                   {currentStep > 0 ? (
-                    <button onClick={handleBack} className="btn-ghost text-sm py-2.5 px-5">← Back</button>
+                    <button onClick={handleBack} className="btn-ghost text-sm py-2.5 px-5">Back</button>
                   ) : <div />}
                   {currentStep < steps.length - 1 ? (
                     <button onClick={handleNext} disabled={!isStepValid()} className="btn-primary text-sm py-2.5 px-6 disabled:opacity-40 disabled:cursor-not-allowed">
-                      <span>Continue →</span>
+                      <span>Continue</span>
                     </button>
                   ) : (
                     <button onClick={handleSubmit} disabled={!isStepValid() || loading} className="btn-primary text-sm py-2.5 px-6 disabled:opacity-40 disabled:cursor-not-allowed">
-                      <span>{loading ? 'Submitting...' : 'Send Brief →'}</span>
+                      <span>{loading ? 'Submitting...' : 'Send Brief'}</span>
                     </button>
                   )}
                 </div>
@@ -208,7 +225,7 @@ export default function ContactPage() {
           </div>
 
           <p className="text-center text-[#8892A4] text-xs mt-6">
-            No calendar link. No sales call. We respond with a Loom showing your specific revenue leak.
+            No discovery call. We respond with a Loom showing your specific revenue leak within 24 hours.
           </p>
         </div>
       </div>

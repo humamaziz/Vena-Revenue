@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { callGroq, buildFollowUpPrompt } from '@/lib/groq'
+import { callGroq, buildSalesAssistantPrompt } from '@/lib/groq'
 import { isAdminAuthorized, unauthorizedResponse } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
@@ -11,25 +11,25 @@ export async function POST(req: NextRequest) {
 
     const lead = await prisma.lead.findUnique({
       where: { id: leadId },
-      include: { interactions: { orderBy: { createdAt: 'desc' }, take: 5 } },
+      include: { interactions: { orderBy: { createdAt: 'desc' }, take: 6 } },
     })
     if (!lead) return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
 
-    const prompt = buildFollowUpPrompt(lead)
-    const drafts = await callGroq(
-      'You are Ansh, a real person writing short human emails. Never sound like an AI. No corporate speak.',
+    const prompt = buildSalesAssistantPrompt(lead)
+    const analysis = await callGroq(
+      'You are a direct, experienced B2B sales advisor. No fluff. Give sharp, actionable reads.',
       prompt,
-      0.72
+      0.5
     )
 
     await prisma.interaction.create({
-      data: { leadId, type: 'followup_draft', content: drafts },
+      data: { leadId, type: 'ai_analysis', content: `Sales assistant analysis: ${analysis.slice(0, 300)}` },
     })
 
-    return NextResponse.json({ success: true, drafts })
+    return NextResponse.json({ success: true, analysis })
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unknown error'
-    console.error('[generate-followup]', message)
-    return NextResponse.json({ error: `Failed: ${message}` }, { status: 500 })
+    console.error('[sales-assistant]', message)
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
