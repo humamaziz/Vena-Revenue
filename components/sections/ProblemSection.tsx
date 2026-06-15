@@ -10,7 +10,7 @@ const leaks = [
     title: 'The AI Invisibility Leak',
     stat: '0',
     statLabel: 'times your name appears in AI search',
-    desc: 'A high-intent buyer opens ChatGPT or Perplexity and types "best [your service] in [your city]." Three competitors appear. You do not exist. This is not a ranking problem — it is a structural invisibility problem. And it happens on every search, every day, without you knowing.',
+    desc: 'A high-intent buyer opens ChatGPT or Perplexity and types "best [your service] in [your city]." Three competitors appear. You do not exist. This is not a ranking problem - it is a structural invisibility problem. And it happens on every search, every day, without you knowing.',
     color: '#7B61FF',
     vector: 'Vector 1',
   },
@@ -28,7 +28,7 @@ const leaks = [
     title: 'The Form Friction Wall',
     stat: '11%',
     statLabel: 'drop-off per extra form field',
-    desc: 'They decided to book. They clicked the CTA. Then your 8-field intake form killed the deal — silently, invisibly. Every additional form field drops completion rate by 11%. You have built a qualification wall at the exact moment someone is trying to give you money.',
+    desc: 'They decided to book. They clicked the CTA. Then your 8-field intake form killed the deal - silently, invisibly. Every additional form field drops completion rate by 11%. You have built a qualification wall at the exact moment someone is trying to give you money.',
     color: '#F59E0B',
     vector: 'Vector 3',
   },
@@ -37,7 +37,7 @@ const leaks = [
     title: 'The Ad Spend Hemorrhage',
     stat: '53%',
     statLabel: 'of mobile users abandon a page taking 3+ seconds',
-    desc: 'Your landing page loads in 5.1 seconds on mobile. Your tracking parameters are being stripped on page load. Your campaigns are running blind — budget optimization based on corrupted data, pushing cost-per-acquisition higher every week. You are not running an ad problem. You are running a funnel integrity problem.',
+    desc: 'Your landing page loads in 5.1 seconds on mobile. Your tracking parameters are being stripped on page load. Your campaigns are running blind - budget optimization based on corrupted data, pushing cost-per-acquisition higher every week. You are not running an ad problem. You are running a funnel integrity problem.',
     color: '#00F5D4',
     vector: 'Vector 4',
   },
@@ -57,7 +57,7 @@ export default function ProblemSection() {
 
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection className="mb-4">
-          <span className="text-[#FF4D6D] text-xs font-bold tracking-[0.3em] uppercase">Chapter 01 — The Problem</span>
+          <span className="text-[#FF4D6D] text-xs font-bold tracking-[0.3em] uppercase">Chapter 01 - The Problem</span>
         </AnimatedSection>
 
         <div className="grid lg:grid-cols-2 gap-16 items-start mb-20">
@@ -69,7 +69,7 @@ export default function ProblemSection() {
           </AnimatedSection>
           <AnimatedSection delay={0.2}>
             <p className="text-[#8892A4] text-lg leading-relaxed">
-              Most business owners assume they have a marketing problem. More ads, more content, more outreach. But the revenue is not dying at acquisition — it is dying <strong className="text-white">after</strong> the interest is already there. The systems that were supposed to catch buyers are actively pushing them away. We call these Revenue Leaks. They exist in every business we have ever audited.
+              Most business owners assume they have a marketing problem. More ads, more content, more outreach. But the revenue is not dying at acquisition - it is dying <strong className="text-white">after</strong> the interest is already there. The systems that were supposed to catch buyers are actively pushing them away. We call these Revenue Leaks. They exist in every business we have ever audited.
             </p>
           </AnimatedSection>
         </div>
@@ -116,7 +116,7 @@ export default function ProblemSection() {
             <div className="relative p-10 md:p-16 text-center">
               <p className="font-display font-bold text-3xl md:text-4xl xl:text-5xl text-white max-w-3xl mx-auto leading-tight">
                 &quot;You are not losing leads.{' '}
-                <span className="gradient-text-fire">You are losing revenue quietly</span> — and your dashboard will never show you where.&quot;
+                <span className="gradient-text-fire">You are losing revenue quietly</span> - and your dashboard will never show you where.&quot;
               </p>
               <p className="text-[#8892A4] mt-6 text-lg">
                 The average business we audit loses{' '}

@@ -10,7 +10,7 @@ const steps = [
     number: '01',
     phase: 'Diagnose',
     title: 'We Find Every Leak',
-    desc: 'In 48 hours we run your business through our 8-Pillar Revenue Diagnostic — scoring conversion architecture, GEO intelligence, technical performance, AI integration opportunity, booking systems, branding, competitive position, and copy psychology. Every gap is quantified in dollars.',
+    desc: 'In 48 hours we run your business through our 8-Pillar Revenue Diagnostic - scoring conversion architecture, GEO intelligence, technical performance, AI integration opportunity, booking systems, branding, competitive position, and copy psychology. Every gap is quantified in dollars.',
     bullets: [
       'AI search visibility gap analysis',
       'Funnel friction and form audit',
@@ -26,7 +26,7 @@ const steps = [
     number: '02',
     phase: 'Engineer',
     title: 'We Rebuild the Infrastructure',
-    desc: 'We do not patch your old system. We architect a new revenue engine — headless Next.js decoupled architecture, custom JSON-LD entity graph injection, MCP server AI agent pipelines, CRM integration, and automated intake flows. Deployed in 60–90 days.',
+    desc: 'We do not patch your old system. We architect a new revenue engine - headless Next.js decoupled architecture, custom JSON-LD entity graph injection, MCP server AI agent pipelines, CRM integration, and automated intake flows. Deployed in 60–90 days.',
     bullets: [
       'Headless Next.js decoupled web build',
       'Entity-graph JSON-LD schema injection',
@@ -42,7 +42,7 @@ const steps = [
     number: '03',
     phase: 'Defend',
     title: 'We Guard Your Position',
-    desc: 'Commercial LLM providers — OpenAI, Anthropic, Google — constantly update their neural weights, vector embeddings, and citation scoring algorithms. Our retainer ensures your infrastructure adapts in real time so you do not lose ground in a single model update.',
+    desc: 'Commercial LLM providers - OpenAI, Anthropic, Google - constantly update their neural weights, vector embeddings, and citation scoring algorithms. Our retainer ensures your infrastructure adapts in real time so you do not lose ground in a single model update.',
     bullets: [
       'Monthly citation score tracking',
       'Real-time schema adaptation',
@@ -78,7 +78,7 @@ export default function SystemSection() {
 
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection className="mb-4">
-          <span className="text-[#00F5D4] text-xs font-bold tracking-[0.3em] uppercase">Chapter 02 — The System</span>
+          <span className="text-[#00F5D4] text-xs font-bold tracking-[0.3em] uppercase">Chapter 02 - The System</span>
         </AnimatedSection>
 
         <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8 mb-16">
@@ -90,7 +90,7 @@ export default function SystemSection() {
           </AnimatedSection>
           <AnimatedSection delay={0.2} className="max-w-sm">
             <p className="text-[#8892A4] leading-relaxed">
-              Three phases. No guesswork. Every deliverable is tied to measurable revenue outcomes — not vanity metrics. A DIY approach costs $200K–$350K+ in year one and takes 6–12 months to configure. We deliver in 60–90 days.
+              Three phases. No guesswork. Every deliverable is tied to measurable revenue outcomes - not vanity metrics. A DIY approach costs $200K–$350K+ in year one and takes 6–12 months to configure. We deliver in 60–90 days.
             </p>
           </AnimatedSection>
         </div>

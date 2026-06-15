@@ -36,12 +36,12 @@ const projects = [
     color: '#7B61FF',
   },
   {
-    client: 'B2B SaaS — HR Tech Platform',
+    client: 'B2B SaaS - HR Tech Platform',
     location: 'Remote · $8M ARR',
-    vector: 'Vector 1 — AI Invisibility Leak',
+    vector: 'Vector 1 - AI Invisibility Leak',
     category: 'SaaS · GEO · AI Agent Pipeline',
     headline: '$2.1M ARR attributed to GEO infrastructure in 6 months',
-    problem: 'Organic traffic declining 40% YoY. No enterprise AI search presence — invisible in ChatGPT, Perplexity, and Claude results. Sales team wasting 40%+ of time on unqualified leads with no intake automation layer.',
+    problem: 'Organic traffic declining 40% YoY. No enterprise AI search presence - invisible in ChatGPT, Perplexity, and Claude results. Sales team wasting 40%+ of time on unqualified leads with no intake automation layer.',
     solution: 'Built complete GEO citation network across 6 enterprise HR keywords. Deployed MCP-based AI qualification agent on the demo request flow. Compressed sales cycle through AI-assisted outbound targeting buyers already showing AI search intent.',
     metrics: [
       { label: 'ARR Attributed', value: '$2.1M' },
@@ -54,7 +54,7 @@ const projects = [
   {
     client: 'Boutique Hotel Collection',
     location: 'Thailand · 3 Properties',
-    vector: 'Vector 5 — Booking & Response Crisis',
+    vector: 'Vector 5 - Booking & Response Crisis',
     category: 'Hospitality · Direct Booking · OTA Recovery',
     headline: '$180K/yr OTA commission recovered through direct booking rebuild',
     problem: 'Losing 20% commission to OTAs on every booking. Clunky third-party booking embeds on mobile. No direct booking incentive flow. Guests not discovering add-ons or upgrades. No upsell automation post-booking.',
@@ -70,10 +70,10 @@ const projects = [
   {
     client: 'Orthodontic Group (Multi-Location)',
     location: 'Florida · 6 Locations',
-    vector: 'Vector 4 — Ad Spend Hemorrhage',
+    vector: 'Vector 4 - Ad Spend Hemorrhage',
     category: 'Dental · Paid Traffic · Landing Page',
     headline: 'Google Ads CPL reduced 61% after funnel integrity rebuild',
-    problem: 'Spending $11K/month on Google Ads. Landing page loading at 4.8 seconds on mobile. UTM tracking parameters being stripped on page load — ad campaigns running blind on corrupted conversion data. Message mismatch between ad copy and landing page.',
+    problem: 'Spending $11K/month on Google Ads. Landing page loading at 4.8 seconds on mobile. UTM tracking parameters being stripped on page load - ad campaigns running blind on corrupted conversion data. Message mismatch between ad copy and landing page.',
     solution: 'Rebuilt landing page with sub-1.5-second mobile load. Fixed pixel and tracking parameter integrity. Aligned ad copy with landing page messaging across 6 location campaigns. Deployed A/B testing framework.',
     metrics: [
       { label: 'CPL Reduction', value: '61%' },
@@ -102,7 +102,7 @@ export default function ProjectsPage() {
           </AnimatedSection>
           <AnimatedSection delay={0.2}>
             <p className="text-[#8892A4] text-xl max-w-2xl">
-              Every case study is a system we built, a leak we found, and revenue we recovered. Before, after, and the exact methodology — no testimonial soup, no vanity metrics.
+              Every case study is a system we built, a leak we found, and revenue we recovered. Before, after, and the exact methodology - no testimonial soup, no vanity metrics.
             </p>
           </AnimatedSection>
         </div>

@@ -24,8 +24,8 @@ const steps = [
     subtitle: 'Context lets us pinpoint your biggest leak before the audit even starts.',
     fields: [
       { name: 'industry', label: 'Industry / Niche', type: 'text', placeholder: 'e.g. Personal Injury Law, MedSpa, B2B SaaS' },
-      { name: 'revenue', label: 'Estimated Monthly Revenue', type: 'select', options: ['Under $50K', '$50K–$200K', '$200K–$500K', '$500K–$1M', '$1M+'] },
-      { name: 'adspend', label: 'Monthly Ad Spend', type: 'select', options: ['None', 'Under $2K', '$2K–$10K', '$10K–$50K', '$50K+'] },
+      { name: 'revenue', label: 'Estimated Monthly Revenue', type: 'select', options: ['Under $50K', '$50K-$200K', '$200K-$500K', '$500K-$1M', '$1M+'] },
+      { name: 'adspend', label: 'Monthly Ad Spend', type: 'select', options: ['None', 'Under $2K', '$2K-$10K', '$10K-$50K', '$50K+'] },
     ],
   },
   {
@@ -35,7 +35,7 @@ const steps = [
     fields: [
       { name: 'problem', label: 'Describe Your Main Challenge', type: 'textarea', placeholder: 'e.g. We run Google Ads but conversion rate is under 1%. Leads come in but our team is slow to respond. We are invisible on AI search engines...' },
       { name: 'goal', label: 'Primary Goal', type: 'select', options: ['More qualified leads', 'Higher conversion rate', 'Faster lead response', 'AI search visibility', 'Reduce ad spend waste', 'Full system rebuild'] },
-      { name: 'budget', label: 'Budget Range for a Fix', type: 'select', options: ['Under $5K', '$5K–$15K', '$15K–$30K', '$30K–$75K', '$75K+'] },
+      { name: 'budget', label: 'Budget Range for a Fix', type: 'select', options: ['Under $5K', '$5K-$15K', '$15K-$30K', '$30K-$75K', '$75K+'] },
     ],
   },
 ]
@@ -90,7 +90,7 @@ export default function ContactPage() {
             <div className="text-6xl mb-6">✅</div>
             <h2 className="font-display font-bold text-4xl text-white mb-4">Brief received.</h2>
             <p className="text-[#8892A4] text-lg leading-relaxed mb-8">
-              Our team is already researching <strong className="text-white">{formData.business}</strong>. Expect a 90-second Loom video from us within 24 hours showing exactly where the revenue is leaking — and what we would do about it.
+              Our team is already researching <strong className="text-white">{formData.business}</strong>. Expect a 90-second Loom video from us within 24 hours showing exactly where the revenue is leaking - and what we would do about it.
             </p>
             <div className="glass border border-[#00F5D4]/20 rounded-2xl p-6 mb-6">
               <p className="text-[#8892A4] text-sm leading-relaxed">

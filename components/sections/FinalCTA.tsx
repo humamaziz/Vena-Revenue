@@ -24,7 +24,7 @@ export default function FinalCTA() {
 
         <AnimatedSection delay={0.2} className="mb-12">
           <p className="text-[#8892A4] text-lg md:text-xl leading-relaxed max-w-2xl mx-auto">
-            The businesses that win in the next three years will not be the ones with the biggest budgets. They will be the ones with the most intelligent infrastructure. By 2027, AI will initiate 95% of seller research workflows. The question is not whether to adapt — it is whether you adapt before or after your competitors do.
+            The businesses that win in the next three years will not be the ones with the biggest budgets. They will be the ones with the most intelligent infrastructure. By 2027, AI will initiate 95% of seller research workflows. The question is not whether to adapt - it is whether you adapt before or after your competitors do.
           </p>
           <p className="text-[#8892A4] text-lg mt-4 max-w-2xl mx-auto">
             The audit starts at <span className="text-white font-bold">$2,500</span>. The leaks we find are worth multiples of that. The full build is delivered in <span className="text-white font-bold">60–90 days</span>. The audit fee is credited 100% toward the build.
@@ -46,7 +46,7 @@ export default function FinalCTA() {
               '2× ROI guarantee or instant refund',
               '48-hour diagnostic delivery',
               '100% fee credited toward build',
-              'No discovery calls — just answers',
+              'No discovery calls - just answers',
               '60–90 day full implementation',
             ].map((item) => (
               <div key={item} className="flex items-center gap-2">
@@ -68,7 +68,7 @@ export default function FinalCTA() {
               &quot;Best [your service] in [your city]&quot;
             </p>
             <p className="text-[#8892A4]">
-              Three competitors appear. You do not. The audit finds out why — and maps the exact schema architecture that gets your name back in those results.
+              Three competitors appear. You do not. The audit finds out why - and maps the exact schema architecture that gets your name back in those results.
             </p>
           </div>
         </AnimatedSection>

@@ -43,7 +43,7 @@ const guarantee = [
   'Every documented leak quantified in dollars',
   'Prioritized 90-day fix roadmap',
   '100% audit fee credited toward full build',
-  '2× ROI guarantee — or instant full refund',
+  '2× ROI guarantee - or instant full refund',
   'Delivered in 48 hours, no exceptions',
 ]
 
@@ -65,7 +65,7 @@ export default function OfferSection() {
               <span className="gradient-text">Not a sales call.</span>
             </h2>
             <p className="text-[#8892A4] text-lg leading-relaxed mt-6">
-              We do not book calls to &quot;learn more about your business.&quot; We show up with answers. The audit is the product — and it pays for itself before we discuss the build. Every diagnostic fee is credited 100% toward the implementation if you sign within 14 days.
+              We do not book calls to &quot;learn more about your business.&quot; We show up with answers. The audit is the product - and it pays for itself before we discuss the build. Every diagnostic fee is credited 100% toward the implementation if you sign within 14 days.
             </p>
           </AnimatedSection>
 

@@ -122,7 +122,7 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.0, duration: 0.8 }}
               className="text-[#8892A4] text-lg md:text-xl max-w-xl mb-10 leading-relaxed"
             >
-              80% of B2B buyers decide before they ever touch your CRM. They are asking AI engines who the best provider is. Your competitors appear. You{" don't"}. We fix that — and build the autonomous sales infrastructure that converts that intent on arrival.
+              80% of B2B buyers decide before they ever touch your CRM. They are asking AI engines who the best provider is. Your competitors appear. You{" don't"}. We fix that - and build the autonomous sales infrastructure that converts that intent on arrival.
             </motion.p>
 
             <motion.div

@@ -15,7 +15,7 @@ const spaceGrotesk = Space_Grotesk({
 })
 
 export const metadata: Metadata = {
-  title: 'Vena%Revenue — Revenue Engineering for Modern Businesses',
+  title: 'Vena%Revenue - Revenue Engineering for Modern Businesses',
   description:
     "We don't build websites. We build revenue systems. Audit, fix, and scale your business with AI-powered infrastructure.",
   keywords: ['revenue optimization', 'GEO', 'AI sales automation', 'web development', 'lead generation'],

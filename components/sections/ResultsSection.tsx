@@ -14,9 +14,9 @@ const cases = [
   {
     client: 'Personal Injury Law Firm',
     location: 'Houston, TX',
-    vector: 'Vector 2 — Ghosted Lead Bleed',
+    vector: 'Vector 2 - Ghosted Lead Bleed',
     result: '$84K recovered in 60 days',
-    detail: 'Zero intake automation — leads going cold within 48 hours. Deployed AI agent pipeline with sub-90-second response. Reactivated ghosted inquiry database.',
+    detail: 'Zero intake automation - leads going cold within 48 hours. Deployed AI agent pipeline with sub-90-second response. Reactivated ghosted inquiry database.',
     before: '8+ hour average response time',
     after: '< 90 seconds, fully automated',
     color: '#00F5D4',
@@ -24,7 +24,7 @@ const cases = [
   {
     client: 'MedSpa Group (4 Locations)',
     location: 'Miami, FL',
-    vector: 'Vector 3 — Form Friction Wall',
+    vector: 'Vector 3 - Form Friction Wall',
     result: '+312% conversion rate',
     detail: 'Phone-only booking losing 60%+ of mobile traffic. Rebuilt intake to 2-field mobile-first flow. Injected schema for all treatment keywords.',
     before: '0 AI search visibility, 9-field form',
@@ -32,9 +32,9 @@ const cases = [
     color: '#7B61FF',
   },
   {
-    client: 'B2B SaaS — HR Tech',
+    client: 'B2B SaaS - HR Tech',
     location: 'Remote · $8M ARR',
-    vector: 'Vector 1 — AI Invisibility Leak',
+    vector: 'Vector 1 - AI Invisibility Leak',
     result: '$2.1M ARR attributed',
     detail: 'Invisible in enterprise AI search. Built complete GEO citation network. Deployed MCP-based lead qualification agent. Compressed sales cycle significantly.',
     before: '$9K/mo ad spend, 0.4% CVR',
@@ -44,7 +44,7 @@ const cases = [
   {
     client: 'Boutique Hotel Collection',
     location: 'Thailand · 3 Properties',
-    vector: 'Vector 5 — Response & Booking Crisis',
+    vector: 'Vector 5 - Response & Booking Crisis',
     result: '$180K/yr OTA commission recovered',
     detail: 'Losing 20% commission to OTAs. Rebuilt direct booking flow with instant confirmation. Deployed upsell automation. Schema for local AI search.',
     before: '20% OTA commission drain, clunky embeds',
@@ -63,7 +63,7 @@ export default function ResultsSection() {
 
       <div className="max-w-7xl mx-auto px-6">
         <AnimatedSection className="mb-4">
-          <span className="text-[#7B61FF] text-xs font-bold tracking-[0.3em] uppercase">Chapter 03 — The Results</span>
+          <span className="text-[#7B61FF] text-xs font-bold tracking-[0.3em] uppercase">Chapter 03 - The Results</span>
         </AnimatedSection>
 
         <AnimatedSection className="mb-16">
@@ -91,7 +91,7 @@ export default function ResultsSection() {
         {/* Case studies */}
         <AnimatedSection className="mb-8">
           <h3 className="font-display font-bold text-2xl text-white">Real systems. Documented outcomes.</h3>
-          <p className="text-[#8892A4] mt-2 text-sm">Before, after, and the exact methodology — no testimonial soup.</p>
+          <p className="text-[#8892A4] mt-2 text-sm">Before, after, and the exact methodology - no testimonial soup.</p>
         </AnimatedSection>
 
         <div className="grid lg:grid-cols-2 gap-6">
@@ -132,9 +132,9 @@ export default function ResultsSection() {
           <div className="glass border border-white/[0.06] rounded-2xl p-6 md:p-8">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center md:text-left">
               {[
-                { stat: '$848M → $19.8B', label: 'GEO market growth by 2034 at 34–50% CAGR — the space we operate in is not a trend, it is a structural shift.' },
+                { stat: '$848M → $19.8B', label: 'GEO market growth by 2034 at 34–50% CAGR - the space we operate in is not a trend, it is a structural shift.' },
                 { stat: '40%+', label: 'of sales team time wasted on unqualified leads or manual tasks when AI automation is absent from the web infrastructure.' },
-                { stat: '$350K+', label: 'average annual deal size for managed GEO service contracts at the enterprise level — this market pays premium for quality execution.' },
+                { stat: '$350K+', label: 'average annual deal size for managed GEO service contracts at the enterprise level - this market pays premium for quality execution.' },
               ].map((s) => (
                 <div key={s.stat}>
                   <div className="font-display font-bold text-2xl gradient-text mb-2">{s.stat}</div>
