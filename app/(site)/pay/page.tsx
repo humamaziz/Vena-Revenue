@@ -113,10 +113,10 @@ function PayPageContent() {
               onClick={() => setSelected(tier.id)}
               className={`relative rounded-2xl text-left transition-all duration-300 hover:-translate-y-1 ${
                 selected === tier.id
-                  ? 'ring-2 scale-[1.02]'
+                    ? 'ring-2 scale-[1.02]'
                   : 'glass border border-white/[0.06] hover:border-white/[0.12]'
               }`}
-              style={selected === tier.id ? { ringColor: tier.color, border: `2px solid ${tier.color}`, background: `${tier.color}08` } : {}}
+              style={selected === tier.id ? { border: `2px solid ${tier.color}`, background: `${tier.color}08`, boxShadow: `0 0 0 2px ${tier.color}` } : {}}
             >
               {tier.featured && (
                 <div className="absolute -top-3 left-1/2 -translate-x-1/2 text-[#0B0F1A] text-xs font-bold px-4 py-1 rounded-full"
