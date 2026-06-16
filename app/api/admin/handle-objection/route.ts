@@ -8,20 +8,9 @@ export async function POST(req: NextRequest) {
   try {
     const { leadId, objection } = await req.json()
     if (!leadId || !objection) return NextResponse.json({ error: 'leadId and objection required' }, { status: 400 })
-
     const lead = await prisma.lead.findUnique({ where: { id: leadId } })
     if (!lead) return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
-
-    const prompt = buildObjectionPrompt({ name: lead.name, industry: lead.industry, goal: lead.goal, objection })
-    const reply = await callGroq(
-      'You are a confident, human sales closer. Write naturally. Never sound like AI.',
-      prompt,
-      0.65
-    )
-
+    const reply = await callGroq('You are a confident, human sales closer. Never sound like AI. Never be defensive.', buildObjectionPrompt({ name: lead.name, industry: lead.industry, goal: lead.goal, objection }), 0.65)
     return NextResponse.json({ success: true, reply })
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
-    return NextResponse.json({ error: message }, { status: 500 })
-  }
+  } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : 'Error' }, { status: 500 }) }
 }

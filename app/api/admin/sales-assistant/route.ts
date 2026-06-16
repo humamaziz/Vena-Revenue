@@ -8,28 +8,10 @@ export async function POST(req: NextRequest) {
   try {
     const { leadId } = await req.json()
     if (!leadId) return NextResponse.json({ error: 'leadId required' }, { status: 400 })
-
-    const lead = await prisma.lead.findUnique({
-      where: { id: leadId },
-      include: { interactions: { orderBy: { createdAt: 'desc' }, take: 6 } },
-    })
+    const lead = await prisma.lead.findUnique({ where: { id: leadId }, include: { interactions: { orderBy: { createdAt: 'desc' }, take: 6 } } })
     if (!lead) return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
-
-    const prompt = buildSalesAssistantPrompt(lead)
-    const analysis = await callGroq(
-      'You are a direct, experienced B2B sales advisor. No fluff. Give sharp, actionable reads.',
-      prompt,
-      0.5
-    )
-
-    await prisma.interaction.create({
-      data: { leadId, type: 'ai_analysis', content: `Sales assistant analysis: ${analysis.slice(0, 300)}` },
-    })
-
+    const analysis = await callGroq('You are a direct, experienced B2B sales advisor. No fluff. Sharp reads.', buildSalesAssistantPrompt(lead), 0.5)
+    await prisma.interaction.create({ data: { leadId, type: 'ai_analysis', content: `Sales analysis run.` } })
     return NextResponse.json({ success: true, analysis })
-  } catch (error) {
-    const message = error instanceof Error ? error.message : 'Unknown error'
-    console.error('[sales-assistant]', message)
-    return NextResponse.json({ error: message }, { status: 500 })
-  }
+  } catch (error) { return NextResponse.json({ error: error instanceof Error ? error.message : 'Error' }, { status: 500 }) }
 }
