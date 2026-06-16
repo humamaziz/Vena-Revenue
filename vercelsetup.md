@@ -160,3 +160,6 @@ After SQL runs and Vercel is redeployed, test in this order:
 **"Internal server error" on /client** → DATABASE_URL is still wrong. Make sure it starts with `postgresql://` not `https://`.
 
 **"P1001 Can't reach database"** → You are using Session pooler (5432) locally. Use Option B's direct connection string instead.
+
+
+**lead loss = Location
