@@ -129,11 +129,11 @@ export default function ContactPage() {
               Brief received.
             </h2>
             <p className="text-[#8892A4] text-lg leading-relaxed mb-10">
-              Our team is already researching{' '}
+              Our team will start researching{' '}
               <span className="text-white font-semibold">{formData.business}</span> in{' '}
               <span className="text-white font-semibold">{formData.location}</span>. Expect a
-              90-second Loom video from us within 24 hours showing exactly where the revenue is
-              leaking — compared to the top competitor in your market doing the same thing.
+              90-second Loom video from us within 48 hours showing exactly where the revenue is
+              leaking - compared to the top competitor in your market doing the same thing.
             </p>
 
             {/* Payment CTA */}
@@ -146,7 +146,7 @@ export default function ContactPage() {
                   </h3>
                   <p className="text-[#8892A4] text-sm leading-relaxed">
                     Pay for your audit now and we prioritize your research immediately. Delivered
-                    in 48 hours guaranteed. The full fee is credited 100% toward the build if you
+                    in 24 hours guaranteed. The full fee is credited 100% toward the build if you
                     sign within 14 days.
                   </p>
                 </div>
@@ -162,7 +162,7 @@ export default function ContactPage() {
             <div className="glass border border-white/[0.06] rounded-xl p-5 text-left">
               <p className="text-[#8892A4] text-sm leading-relaxed">
                 <span className="text-white font-semibold">Prefer to wait?</span>{' '}
-                No problem. We will send the Loom breakdown first — you decide after seeing what
+                No problem. We will send the Loom breakdown first - you decide after seeing what
                 we found. Track your status below.
               </p>
               <Link

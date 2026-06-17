@@ -16,7 +16,7 @@ const tiers = [
       'Top 4 Pillars scored and documented',
       'Primary revenue leak identified with dollar estimate',
       'Prioritized fix roadmap',
-      '2x ROI guarantee — full refund if we miss',
+      '2x ROI guarantee - full refund if we miss',
     ],
     note: '100% credited toward Standard Build if signed within 14 days.',
     color: '#8892A4',

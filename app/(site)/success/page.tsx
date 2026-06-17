@@ -9,7 +9,7 @@ export default function SuccessPage() {
           <div className="text-6xl mb-6">🎉</div>
           <h1 className="font-display font-bold text-4xl text-white mb-4">Payment confirmed.</h1>
           <p className="text-[#8892A4] text-lg leading-relaxed mb-8">
-            Your payment has been received. Our team will now prepare your full audit report with PDF attachment and deliver it to your inbox within 48 hours.
+            Your payment has been received. Our team will now prepare your full audit report with PDF attachment and deliver it to your inbox within 24 hours.
           </p>
           <div className="glass border border-[#00F5D4]/20 rounded-2xl p-6 mb-8">
             <p className="text-[#8892A4] text-sm leading-relaxed">
