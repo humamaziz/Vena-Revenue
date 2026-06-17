@@ -22,13 +22,16 @@ export async function POST(req: NextRequest) {
     const userPrompt = buildAuditPrompt(lead)
 
     const audit = await callGroq(
-      'You are an elite revenue engineering analyst. Be specific, data-driven, and direct. Never use generic advice.',
-      userPrompt
+      'You are an elite revenue engineering analyst at Vena%Revenue writing a $6,000 comprehensive audit document. Follow the exact structure given with zero deviation — section headers, tables, ASCII diagrams, and the financial leakage breakdown are all mandatory, not optional. Name specific competitor archetypes. Use specific numbers everywhere. Never write generic advice. Never sound like an AI assistant — sound like a senior consultant who has already studied this exact market.',
+      userPrompt,
+      0.65,
+      4500
     )
 
-    // Generate a short preview (first 3 lines of actual content)
-    const lines = audit.split('\n').filter((l) => l.trim().length > 0)
-    const preview = lines.slice(0, 4).join('\n')
+    // Extract the Executive Briefing section for the client-facing preview —
+    // grabbing the first 4 raw lines would just capture the title block now
+    // that the audit uses the full # / ## header structure.
+    const preview = extractExecutiveBriefingPreview(audit)
 
     await prisma.lead.update({
       where: { id: leadId },
@@ -56,4 +59,15 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     )
   }
+}
+
+function extractExecutiveBriefingPreview(audit: string): string {
+  const briefingMatch = audit.match(/## Executive Briefing[\s\S]*?(?=\n## Pillar 1)/)
+  if (briefingMatch) {
+    const cleaned = briefingMatch[0].replace(/^## Executive Briefing.*\n/, '').trim()
+    return cleaned.slice(0, 600)
+  }
+  // Fallback — first meaningful paragraph if the header pattern didn't match
+  const lines = audit.split('\n').filter((l) => l.trim().length > 0 && !l.trim().startsWith('#'))
+  return lines.slice(0, 3).join('\n').slice(0, 600)
 }

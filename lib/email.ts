@@ -22,6 +22,7 @@ export async function sendAdminNotification(lead: {
   adspend?: string | null
   budget?: string | null
   problem?: string | null
+  location?: string | null
 }) {
   const transporter = getTransporter()
   const adminEmail = process.env.ADMIN_EMAIL ?? process.env.EMAIL_USER ?? ''
@@ -42,6 +43,7 @@ export async function sendAdminNotification(lead: {
           <tr><td style="padding:8px; font-weight:bold;">Monthly Revenue</td><td>${lead.revenue ?? '—'}</td></tr>
           <tr><td style="padding:8px; font-weight:bold;">Ad Spend</td><td>${lead.adspend ?? '—'}</td></tr>
           <tr><td style="padding:8px; font-weight:bold;">Budget</td><td>${lead.budget ?? '—'}</td></tr>
+          <tr><td style="padding:8px; font-weight:bold;">Location</td><td>${lead.location ?? '—'}</td></tr>
         </table>
         <h3>Challenge</h3>
         <p>${lead.problem ?? '—'}</p>

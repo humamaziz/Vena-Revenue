@@ -3,9 +3,9 @@ generator client {
 }
 
 datasource db {
-  provider          = "postgresql"
-  url               = env("DATABASE_URL")
-  directUrl         = env("DIRECT_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model Lead {
@@ -15,10 +15,11 @@ model Lead {
   website     String
   industry    String
   goal        String
+  location    String?
+
   revenue     String?
   adspend     String?
   budget      String?
-  problem     String?
 
   audit       String?
   preview     String?
