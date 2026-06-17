@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
       'You are an elite revenue engineering analyst at Vena%Revenue writing a $6,000 comprehensive audit document. Follow the exact structure given with zero deviation — section headers, tables, ASCII diagrams, and the financial leakage breakdown are all mandatory, not optional. Name specific competitor archetypes. Use specific numbers everywhere. Never write generic advice. Never sound like an AI assistant — sound like a senior consultant who has already studied this exact market.',
       userPrompt,
       0.65,
-      4500
+      3000
     )
 
     // Extract the Executive Briefing section for the client-facing preview —
