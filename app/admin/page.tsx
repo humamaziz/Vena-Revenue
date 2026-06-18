@@ -11,7 +11,11 @@ interface Lead {
 }
 interface ResearchProfile {
   icpMatch: string; estimatedLTV: string; primaryVector: string; vectorName: string
-  topCompetitors: string[]; industryBenchmarks: Record<string, string>
+  topCompetitors: {
+  name: string
+  estimatedRevenue: string
+  whyTheyWin: string
+}[]; industryBenchmarks: Record<string, string>
   estimatedLeakage: string; closingHook: string; suggestedAuditTier: string
   redFlags: string[]; strengthSignals: string[]
 }
@@ -580,9 +584,17 @@ export default function AdminDashboard() {
                       <div className="glass border border-white/[0.06] rounded-xl p-4">
                         <div className="text-xs font-bold text-[#8892A4] mb-2 uppercase tracking-wider">Top Competitors</div>
                         <div className="flex flex-wrap gap-2">
-                          {researchProfile.topCompetitors.map(c => (
-                            <span key={c} className="bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-1 text-xs text-white">{c}</span>
-                          ))}
+                          {researchProfile.topCompetitors.map((comp, i) => (
+  <div key={i} className="p-3 border border-white/10 rounded mb-2">
+    <p className="text-white font-semibold">{comp.name}</p>
+    <p className="text-sm text-[#8892A4]">
+      Revenue: {comp.estimatedRevenue}
+    </p>
+    <p className="text-sm text-[#8892A4]">
+      {comp.whyTheyWin}
+    </p>
+  </div>
+))}
                         </div>
                       </div>
 
