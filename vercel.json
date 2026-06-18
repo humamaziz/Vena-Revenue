@@ -1,19 +1,15 @@
 {
   "functions": {
-    "app/api/admin/generate-audit/route.ts": {
-      "maxDuration": 30
-    },
-    "app/api/admin/generate-pdf/route.ts": {
-      "maxDuration": 30
-    },
-    "app/api/admin/score-lead/route.ts": {
-      "maxDuration": 30
-    },
-    "app/api/admin/generate-followup/route.ts": {
-      "maxDuration": 30
-    },
-    "app/api/admin/send-email/route.ts": {
-      "maxDuration": 30
-    }
+    "app/api/admin/generate-audit/route.ts": { "maxDuration": 60 },
+    "app/api/admin/generate-pdf/route.ts": { "maxDuration": 60 },
+    "app/api/admin/score-lead/route.ts": { "maxDuration": 30 },
+    "app/api/admin/generate-followup/route.ts": { "maxDuration": 30 },
+    "app/api/admin/sales-assistant/route.ts": { "maxDuration": 30 },
+    "app/api/admin/research-lead/route.ts": { "maxDuration": 30 },
+    "app/api/admin/send-email/route.ts": { "maxDuration": 30 },
+    "app/api/admin/create-loom-script/route.ts": { "maxDuration": 30 },
+    "app/api/admin/generate-email-template/route.ts": { "maxDuration": 30 },
+    "app/api/admin/handle-objection/route.ts": { "maxDuration": 30 },
+    "app/api/admin/quick-email/route.ts": { "maxDuration": 30 }
   }
 }

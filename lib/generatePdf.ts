@@ -116,7 +116,7 @@ export async function generateAuditPDF(lead: LeadInput): Promise<Buffer> {
 
   const doc = React.createElement(
     Document,
-    { title: `Revenue Audit — ${lead.name}`, author: 'Vena%Revenue' },
+    { title: `Revenue Audit - ${lead.name}`, author: 'Vena%Revenue' },
     React.createElement(
       Page,
       { size: 'A4', style: styles.page, wrap: true },
@@ -128,11 +128,11 @@ export async function generateAuditPDF(lead: LeadInput): Promise<Buffer> {
         React.createElement(Text, { style: styles.dateText }, dateStr)
       ),
       React.createElement(Text, { style: styles.title }, 'Comprehensive Revenue Leak & Growth Audit'),
-      React.createElement(Text, { style: styles.subtitle }, `Prepared for ${lead.name} — Confidential`),
+      React.createElement(Text, { style: styles.subtitle }, `Prepared for ${lead.name} - Confidential`),
       React.createElement(View, { style: styles.metaCard },
         React.createElement(Text, { style: styles.metaTitle }, 'Business Details'),
         ...[
-          ['Contact', `${lead.name} — ${lead.email}`],
+          ['Contact', `${lead.name} - ${lead.email}`],
           ['Website', lead.website],
           ['Industry', lead.industry],
           ['Goal', lead.goal],
@@ -145,7 +145,7 @@ export async function generateAuditPDF(lead: LeadInput): Promise<Buffer> {
       ),
       ...renderedBlocks,
       React.createElement(View, { style: styles.footer, fixed: true },
-        React.createElement(Text, { style: styles.footerText }, `© ${new Date().getFullYear()} Vena%Revenue — Confidential`),
+        React.createElement(Text, { style: styles.footerText }, `© ${new Date().getFullYear()} Vena%Revenue - Confidential`),
         React.createElement(Text, {
           style: styles.footerText,
           render: ({ pageNumber, totalPages }: { pageNumber: number; totalPages: number }) => `Page ${pageNumber} of ${totalPages}`,

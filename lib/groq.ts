@@ -35,7 +35,7 @@ LOCATION INTELLIGENCE MANDATE: This is critical. Use the location to:
 1. Name the actual top 2-3 competitors dominating this market in ${location} right now
 2. Reference local market dynamics, average pricing, and competitive density
 3. Quantify what the market leader in ${location} is earning vs. what this business is earning
-4. Make the loss feel local and real — not abstract`
+4. Make the loss feel local and real - not abstract`
 }
 
 // ── AUDIT PROMPT ─────────────────────────────────────────────
@@ -54,7 +54,7 @@ export function buildAuditPrompt(lead: LeadCore & {
 
   return `You are writing a COMPREHENSIVE REVENUE LEAK & GROWTH AUDIT for Vena%Revenue, a premium revenue engineering firm. This document is a $6,000 deliverable. The client is paying for elite-level, named, specific intelligence — not generic advice. You write like a senior consultant who has already studied this exact market and these exact competitors.
 
-WRITING RULES — ZERO EXCEPTIONS:
+WRITING RULES - ZERO EXCEPTIONS:
 - NEVER write "In today's digital landscape" — instant disqualification
 - NEVER use: leverage, utilize, synergy, circle back, streamline, holistic
 - NEVER write generic advice that could apply to any business in any city
