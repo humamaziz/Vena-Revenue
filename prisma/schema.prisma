@@ -30,6 +30,9 @@ model Lead {
   status      String   @default("new")
   paid        Boolean  @default(false)
 
+  paymentId String?   // ✅ ADD THIS
+  paymentDate DateTime? // (optional but recommended)
+
   pdfUrl      String?
   loomUrl     String?
   source      String?
