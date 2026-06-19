@@ -37,7 +37,7 @@ const phases = [
 ]
 
 const buildTiers = [
-  { name: 'Standard Build', for: 'Entry Diagnostic clients', investment: '$25,000 flat', note: '$1,500 audit credited toward total' },
+  { name: 'Standard Build', for: 'Entry Diagnostic clients', investment: '$25,000 flat', note: '$2,500 audit credited toward total' },
   { name: 'Mid-Market Build', for: 'Full Report clients', investment: '$24,000 net balance', note: 'Total value $30,000 - $6,000 report fee credited if signed within 14 days' },
   { name: 'Enterprise Build', for: 'ARE Audit clients', investment: '$35,000-$63,000 net', note: 'Total value $50,000-$75,000 - $12K-$15K premium diagnostic fee credited if signed within 14 days' },
 ]
