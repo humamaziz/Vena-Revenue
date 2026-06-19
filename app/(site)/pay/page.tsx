@@ -80,7 +80,12 @@ function PayPageContent() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error ?? 'Checkout failed')
-      if (data.url) window.location.href = data.url
+      if (data.url) {
+        // Stash leadId so the /success page can pair it with PayPal's
+        // returned order token (PayPal's return_url only appends `token`).
+        sessionStorage.setItem('vena_pending_lead_id', leadId)
+        window.location.href = data.url
+      }
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'Something went wrong')
     } finally {
@@ -174,7 +179,7 @@ function PayPageContent() {
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-4 text-[#8892A4] text-xs">
-            <div className="flex items-center gap-1.5"><span>🔒</span> Secured by Stripe</div>
+            <div className="flex items-center gap-1.5"><span>🔒</span> Secured by PayPal</div>
             <div className="flex items-center gap-1.5"><span>↩</span> 2x ROI guarantee or instant refund</div>
             <div className="flex items-center gap-1.5"><span>⏱</span> 48-hr delivery</div>
           </div>

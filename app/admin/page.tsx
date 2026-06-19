@@ -16,7 +16,7 @@ interface ResearchProfile {
   estimatedRevenue: string
   whyTheyWin: string
 }[]; industryBenchmarks: Record<string, string>
-  estimatedLeakage: string; closingHook: string; suggestedAuditTier: string
+  estimatedMonthlyLeakage: string; closingHook: string; suggestedAuditTier: string
   redFlags: string[]; strengthSignals: string[]
 }
 
@@ -550,7 +550,7 @@ export default function AdminDashboard() {
                         </div>
                         <div className="glass border border-white/[0.06] rounded-xl p-4 text-center">
                           <div className="text-xs text-[#8892A4] mb-1 uppercase tracking-wider">Est. Monthly Leakage</div>
-                          <div className="font-display font-bold text-lg text-[#FF4D6D]">{researchProfile.estimatedLeakage}</div>
+                          <div className="font-display font-bold text-lg text-[#FF4D6D]">{researchProfile.estimatedMonthlyLeakage || 'Not enough data'}</div>
                         </div>
                       </div>
 
