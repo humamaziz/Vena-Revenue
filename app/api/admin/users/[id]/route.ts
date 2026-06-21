@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSessionFromRequest, unauthorizedResponse, hasPermission, revokeAllSessionsForUser } from '@/lib/auth'
+import { Role } from '@prisma/client'
 
 // Deactivating a user (rather than deleting) preserves their rating/
 // interaction history while immediately revoking every active session
@@ -15,9 +16,11 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
 
   try {
     const { active, role } = await req.json()
-    const data: { active?: boolean; role?: string } = {}
+    const data: { active?: boolean; role?: Role } = {}
     if (typeof active === 'boolean') data.active = active
-    if (role) data.role = role
+    if (role && Object.values(Role).includes(role)) {
+  data.role = role as Role
+}
 
     const user = await prisma.user.update({ where: { id: params.id }, data })
 
