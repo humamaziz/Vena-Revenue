@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { callGroq, buildFollowUpPrompt } from '@/lib/groq'
 import { getSessionFromRequest, unauthorizedResponse, hasPermission } from '@/lib/auth'
-import { LEAD_SAFE_SELECT } from '@/lib/leadSelect'
+import { LEAD_SAFE_SELECT } from '@/lib/leadSelect.ts'
 
 export async function POST(req: NextRequest) {
   const session = await getSessionFromRequest(req)

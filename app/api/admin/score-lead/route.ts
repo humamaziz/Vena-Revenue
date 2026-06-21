@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { LEAD_SAFE_SELECT } from '@/lib/leadSelect'
+import { LEAD_SAFE_SELECT } from '@/lib/leadSelect.ts'
 import { callGroq, buildScorePrompt } from '@/lib/groq'
 import { getSessionFromRequest, unauthorizedResponse, hasPermission } from '@/lib/auth'
 
