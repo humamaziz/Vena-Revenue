@@ -21,7 +21,7 @@ interface LeadCore {
   name: string
   website: string
   industry: string
-  goal: string
+  goal?: string | null
   location?: string | null
   revenue?: string | null
   adspend?: string | null
@@ -71,7 +71,7 @@ BUSINESS BEING AUDITED:
 Name: ${lead.name}
 Website: ${lead.website}
 Industry: ${lead.industry}
-Primary Goal: ${lead.goal}
+Primary Goal: ${lead.goal ?? 'not specified'}
 Monthly Revenue: ${lead.revenue ?? 'not provided'}
 Monthly Ad Spend: ${lead.adspend ?? 'not provided'}
 Currently Running Paid Ads: ${hasAdSpend ? 'YES' : 'NO — this must be flagged as a missed acquisition channel, not just a leak'}
@@ -218,7 +218,7 @@ ABSOLUTE RULES — any violation makes the output unusable:
 LEAD CONTEXT:
 First Name: ${firstName}
 Industry: ${lead.industry}${loc ? `\nLocation: ${lead.location}` : ''}
-Goal: ${lead.goal}
+Goal: ${lead.goal ?? 'not specified'}
 Status: ${lead.status}
 ${auditSnippet ? `Audit Findings (reference specific details from this): ${auditSnippet}` : ''}
 History: ${history || 'First contact — no prior touchpoints'}
@@ -267,7 +267,7 @@ Business: ${lead.name}
 Website: ${lead.website}
 Industry: ${lead.industry}
 Location: ${lead.location ?? 'not provided'}
-Goal: ${lead.goal}
+Goal: ${lead.goal ?? 'not specified'}
 Revenue: ${lead.revenue ?? 'unknown'}
 Ad Spend: ${lead.adspend ?? 'none stated'}
 Budget: ${lead.budget ?? 'not stated'}
@@ -291,7 +291,7 @@ export function buildSalesAssistantPrompt(lead: LeadCore & {
 
 LEAD:
 Name: ${lead.name} | Industry: ${lead.industry} | Location: ${lead.location ?? 'unknown'}
-Goal: ${lead.goal} | Status: ${lead.status} | Score: ${lead.score ?? 'not scored'}/100 | Priority: ${lead.priority ?? 'not set'}
+Goal: ${lead.goal ?? 'not specified'} | Status: ${lead.status} | Score: ${lead.score ?? 'not scored'}/100 | Priority: ${lead.priority ?? 'not set'}
 Audit done: ${lead.audit ? 'Yes' : 'No'} | Notes: ${lead.notes ?? 'none'}
 History:
 ${history || 'No interactions yet'}
@@ -305,11 +305,11 @@ Answer exactly 4 things. Number them. No headers.
 }
 
 // ── OBJECTION HANDLER ────────────────────────────────────────
-export function buildObjectionPrompt(lead: { name: string; industry: string; location?: string | null; goal: string; objection: string }): string {
+export function buildObjectionPrompt(lead: { name: string; industry: string; location?: string | null; goal?: string | null; objection: string }): string {
   const loc = lead.location ? ` in ${lead.location}` : ''
   return `You are a senior closer at Vena%Revenue. Write a reply to this sales objection. Confident. Human. Not defensive.
 
-LEAD: ${lead.name} | ${lead.industry}${loc} | Goal: ${lead.goal}
+LEAD: ${lead.name} | ${lead.industry}${loc} | Goal: ${lead.goal ?? 'not specified'}
 OBJECTION: "${lead.objection}"
 
 Rules:
@@ -427,7 +427,7 @@ Name: ${lead.name}
 Website: ${lead.website}
 Industry: ${lead.industry}
 Location: ${lead.location ?? 'not provided'}
-Goal: ${lead.goal}
+Goal: ${lead.goal ?? 'not specified'}
 Revenue: ${lead.revenue ?? 'unknown'}
 Ad Spend: ${lead.adspend ?? 'unknown'}
 Budget: ${lead.budget ?? 'not stated'}
@@ -439,9 +439,14 @@ ${lead.location ? `LOCATION RESEARCH MANDATE:
 - Note the competitive density of this market (how saturated is this niche in this location)
 - Flag any geographic-specific opportunities (e.g., underserved suburb, dominant local player)` : ''}
 
-Return ONLY valid JSON. No markdown, no code fences, no explanation:
+REVENUE LEAKAGE CALCULATION — DO THIS FIRST, BEFORE WRITING ANY JSON:
+Take the business's stated monthly revenue (or your best estimate if not given). Revenue-leak audits in this industry typically uncover 10%-25% of monthly revenue in recoverable leaks (lost leads, slow response, poor conversion, missed AI-search visibility, weak booking flow). Calculate a concrete LOW and HIGH dollar figure for THIS business using that range, then write that exact range into "estimatedMonthlyLeakage" below. This field is mandatory — never leave it blank, never write "N/A", never omit it. If revenue is truly unknown, infer a plausible monthly revenue from the industry and location first, state that assumption inside the value itself, e.g. "$8,000-$15,000/mo (assuming ~$60k/mo revenue based on industry size)".
+
+Return ONLY valid JSON. No markdown, no code fences, no explanation. Put estimatedMonthlyLeakage as the SECOND key, right after icpMatch, so it is never truncated or skipped:
 {
   "icpMatch": "<Tier 1 — Perfect ICP|Tier 2 — Strong ICP|Tier 3 — Weak ICP>",
+  "estimatedMonthlyLeakage": "<low>-<high> dollar range, mandatory, never blank>",
+  "leakageReasoning": "<one sentence showing the math: revenue x leak% = this range>",
   "estimatedLTV": "<dollar range over 12 months>",
   "primaryVector": "<1|2|3|4|5>",
   "vectorName": "<AI Invisibility|Ghosted Lead Bleed|Form Friction|Ad Spend Hemorrhage|Booking Crisis>",
@@ -459,7 +464,6 @@ Return ONLY valid JSON. No markdown, no code fences, no explanation:
     "avgClientLTV": "<dollar range>",
     "topPerformerRevenue": "<monthly range for top operator in this niche>"
   },
-  "estimatedMonthlyLeakage": "<dollar range based on their revenue>",
   "gapVsTopCompetitor": "<what the top competitor has that this business is missing — one sentence>",
   "closingHook": "<the single most emotionally and financially compelling sentence to open a sales conversation with this specific owner>",
   "suggestedAuditTier": "<Entry Diagnostic $2,500|Full Revenue Intelligence Report $6,000|Premium ARE Audit $12,000-$15,000>",
@@ -473,6 +477,42 @@ Return ONLY valid JSON. No markdown, no code fences, no explanation:
     "objectionToExpect": "<the most likely objection in the sales conversation>"
   }
 }`
+}
+
+// Deterministic fallback so the dashboard never shows a blank leakage
+// figure even if the model omits the field or returns something the
+// parser can't use. Mirrors the 10%-25%-of-revenue heuristic given to
+// the model itself, so the displayed number stays consistent with what
+// the AI was instructed to calculate.
+export function estimateMonthlyLeakageFallback(revenue?: string | null): string {
+  const monthly = parseMonthlyRevenue(revenue)
+  if (!monthly) return '$3,000-$8,000/mo (est. — no revenue figure provided)'
+  const low = Math.round((monthly * 0.10) / 100) * 100
+  const high = Math.round((monthly * 0.25) / 100) * 100
+  return `$${low.toLocaleString()}-$${high.toLocaleString()}/mo (est.)`
+}
+
+function parseMonthlyRevenue(revenue?: string | null): number | null {
+  if (!revenue) return null
+  // Handles inputs like "$50,000", "50k", "$50K-$100K" (takes the midpoint), "1M"
+  const cleaned = revenue.replace(/[, ]/g, '')
+  const matches = cleaned.match(/(\d+(?:\.\d+)?)(k|m)?/gi)
+  if (!matches || matches.length === 0) return null
+
+  const toNumber = (m: string): number => {
+    const numMatch = m.match(/(\d+(?:\.\d+)?)(k|m)?/i)
+    if (!numMatch) return 0
+    let val = parseFloat(numMatch[1])
+    const suffix = numMatch[2]?.toLowerCase()
+    if (suffix === 'k') val *= 1_000
+    if (suffix === 'm') val *= 1_000_000
+    return val
+  }
+
+  const values = matches.map(toNumber).filter((v) => v > 0)
+  if (values.length === 0) return null
+  if (values.length === 1) return values[0]
+  return (values[0] + values[1]) / 2 // midpoint of a range like "$50K-$100K"
 }
 
 // ── TESTIMONIAL REQUEST ──────────────────────────────────────
@@ -489,13 +529,13 @@ Rules: 4 sentences max. Reference the specific result they got. Ask for a 2-sent
 
 // ── QUICK EMAIL ──────────────────────────────────────────────
 export function buildQuickEmailPrompt(
-  lead: { name: string; industry: string; location?: string | null; goal: string; status: string },
+  lead: { name: string; industry: string; location?: string | null; goal?: string | null; status: string },
   instruction: string
 ): string {
   return `Write a short email for Ansh at Vena%Revenue to send to ${lead.name} (${lead.industry}${lead.location ? `, ${lead.location}` : ''}).
 
 Instruction: "${instruction}"
-Context: Their goal is ${lead.goal}. Current status: ${lead.status}.
+Context: Their goal is ${lead.goal ?? 'not specified'}. Current status: ${lead.status}.
 
 Rules: Human tone, 3-4 sentences max, no corporate language, direct. Sign as "Ansh, Vena%Revenue". Just the email body.`
 }

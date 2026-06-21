@@ -8,13 +8,67 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// ── ROLES ────────────────────────────────────────────────────
+// Mirrors the 5-person operating model (see Work Assignment Flow):
+//   LEAD_GEN       -> finds + adds leads
+//   DATA_MANAGER   -> imports/cleans lead data, runs research, edits leads
+//   VIDEO_CREATOR  -> generates Loom scripts, records + attaches Loom videos
+//   PPT_CREATOR    -> builds the audit PPT, attaches the PPT link
+//   CLOSER         -> owns client conversation, AI sales tools, payments
+//   ADMIN          -> full access + user management
+enum Role {
+  ADMIN
+  CLOSER
+  DATA_MANAGER
+  VIDEO_CREATOR
+  PPT_CREATOR
+  LEAD_GEN
+}
+
+model User {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         Role
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+
+  ratings      LeadRating[]
+  sessions     Session[]
+
+  @@index([role])
+}
+
+// Server-side session record backing the HTTP-only JWT cookie. Storing a
+// row (rather than relying purely on a signed JWT) lets us revoke a
+// session instantly (logout-everywhere, deactivate user) instead of
+// waiting for token expiry — important once there are 5+ people sharing
+// one dashboard and someone leaves the team or a laptop gets lost.
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  tokenHash String   @unique
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
 model Lead {
   id          String   @id @default(cuid())
   name        String
+  company     String?
+  phone       String?
   email       String
   website     String
   industry    String
-  goal        String
+  goal        String?
   location    String?
 
   revenue     String?
@@ -30,18 +84,63 @@ model Lead {
   status      String   @default("new")
   paid        Boolean  @default(false)
 
-  paymentId String?   // ✅ ADD THIS
-  paymentDate DateTime? // (optional but recommended)
+  paymentId   String?
+  paymentDate DateTime?
 
-  pdfUrl      String?
+  // `pdfUrl` only ever holds a short internal download path
+  // (e.g. "/api/admin/leads/<id>/pdf") — never the PDF bytes
+  // themselves. The actual binary lives in `pdfData` (Bytes), which
+  // is excluded from every list/bulk query and only ever selected
+  // by the single dedicated download route. This split is what
+  // fixes the "Array buffer allocation failed" memory crash, which
+  // was caused by base64-encoded PDFs (multi-MB each) being stored
+  // in a TEXT column and then re-serialized into every leads list
+  // and client-portal JSON response.
+  pdfUrl       String?
+  pdfData      Bytes?
+  pdfGeneratedAt DateTime?
+
   loomUrl     String?
+  pptUrl      String?
   source      String?
   notes       String?
 
   lastContact DateTime?
   createdAt   DateTime  @default(now())
 
+  createdByRole Role?
+
   interactions Interaction[]
+  ratings      LeadRating[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([email])
+  @@index([paid])
+  @@index([createdAt])
+  @@index([industry])
+  @@index([status, priority, createdAt])
+}
+
+// One row per PayPal order we create. A Lead can have multiple orders
+// (retry after cancel/expire), so payment state lives here, not just
+// as flat columns on Lead — the flat `paid`/`paymentId`/`paymentDate`
+// fields on Lead remain as a fast-read cache of "the" successful order,
+// kept in sync by the webhook and capture routes.
+model PaypalOrder {
+  id          String   @id @default(cuid())
+  leadId      String
+  orderId     String   @unique // PayPal's order id
+  amount      Int      // whole dollars
+  tier        String
+  status      String   @default("CREATED") // CREATED | APPROVED | COMPLETED | CANCELLED | FAILED
+  captureId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([leadId])
+  @@index([orderId])
+  @@index([status])
 }
 
 model Interaction {
@@ -52,4 +151,25 @@ model Interaction {
   createdAt DateTime @default(now())
 
   lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId])
+}
+
+// 1-5 star manual rating. One row per (lead, rater) — every team
+// member can score a lead regardless of role; the dashboard
+// surfaces the average plus who rated what and why.
+model LeadRating {
+  id        String   @id @default(cuid())
+  leadId    String
+  rating    Int
+  notes     String?
+  ratedById String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  lead    Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  ratedBy User @relation(fields: [ratedById], references: [id], onDelete: Cascade)
+
+  @@unique([leadId, ratedById])
+  @@index([leadId])
 }

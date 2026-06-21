@@ -1,17 +1,22 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { callGroq, buildFollowUpPrompt } from '@/lib/groq'
-import { isAdminAuthorized, unauthorizedResponse } from '@/lib/auth'
+import { getSessionFromRequest, unauthorizedResponse, hasPermission } from '@/lib/auth'
+import { LEAD_SAFE_SELECT } from '@/lib/leadSelect'
 
 export async function POST(req: NextRequest) {
-  if (!isAdminAuthorized(req)) return unauthorizedResponse()
+  const session = await getSessionFromRequest(req)
+  if (!session) return unauthorizedResponse()
+  if (!hasPermission(session.role, 'AI_CHAT_TOOLS')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
   try {
     const { leadId } = await req.json()
     if (!leadId) return NextResponse.json({ error: 'leadId required' }, { status: 400 })
 
     const lead = await prisma.lead.findUnique({
       where: { id: leadId },
-      include: { interactions: { orderBy: { createdAt: 'desc' }, take: 5 } },
+      select: { ...LEAD_SAFE_SELECT, interactions: { orderBy: { createdAt: 'desc' }, take: 5 } },
     })
     if (!lead) return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
 

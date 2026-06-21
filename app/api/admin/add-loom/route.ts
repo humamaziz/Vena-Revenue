@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { isAdminAuthorized, unauthorizedResponse } from '@/lib/auth'
+import { getSessionFromRequest, unauthorizedResponse, hasPermission } from '@/lib/auth'
 
 export async function POST(req: NextRequest) {
-  if (!isAdminAuthorized(req)) return unauthorizedResponse()
+  const session = await getSessionFromRequest(req)
+  if (!session) return unauthorizedResponse()
+  if (!hasPermission(session.role, 'ATTACH_LOOM_URL')) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+  }
 
   try {
     const { leadId, loomUrl } = await req.json()

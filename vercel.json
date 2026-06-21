@@ -10,6 +10,7 @@
     "app/api/admin/create-loom-script/route.ts": { "maxDuration": 30 },
     "app/api/admin/generate-email-template/route.ts": { "maxDuration": 30 },
     "app/api/admin/handle-objection/route.ts": { "maxDuration": 30 },
-    "app/api/admin/quick-email/route.ts": { "maxDuration": 30 }
+    "app/api/admin/quick-email/route.ts": { "maxDuration": 30 },
+    "app/api/admin/upload-csv/route.ts": { "maxDuration": 60 }
   }
 }
