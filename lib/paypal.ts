@@ -3,8 +3,15 @@
 // in @paypal/checkout-server-sdk (which is unmaintained) or the newer
 // @paypal/paypal-server-sdk (heavy for what we need here).
 
+// .trim().toLowerCase() guards against the single most common way this
+// silently breaks: pasting "PAYPAL_ENV=live " (trailing space) or "Live"
+// into Vercel's env var UI. Either of those would previously fall through
+// to the sandbox branch below while you have live credentials configured
+// (or vice versa) — PayPal then correctly rejects the mismatched
+// credential/endpoint pair with a generic "invalid_client" 401 that gives
+// no hint this is the actual cause.
 const PAYPAL_BASE_URL =
-  process.env.PAYPAL_ENV === 'live'
+  (process.env.PAYPAL_ENV ?? '').trim().toLowerCase() === 'live'
     ? 'https://api-m.paypal.com'
     : 'https://api-m.sandbox.paypal.com'
 
@@ -15,8 +22,15 @@ async function getAccessToken(): Promise<string> {
     return cachedToken.value
   }
 
-  const clientId = process.env.PAYPAL_CLIENT_ID ?? ''
-  const clientSecret = process.env.PAYPAL_CLIENT_SECRET ?? ''
+  const clientId = (process.env.PAYPAL_CLIENT_ID ?? '').trim()
+  const clientSecret = (process.env.PAYPAL_CLIENT_SECRET ?? '').trim()
+
+  if (!clientId || !clientSecret) {
+    throw new Error(
+      'PayPal credentials are missing. Set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET in your environment variables.'
+    )
+  }
+
   const basicAuth = Buffer.from(`${clientId}:${clientSecret}`).toString('base64')
 
   const res = await fetch(`${PAYPAL_BASE_URL}/v1/oauth2/token`, {
@@ -30,7 +44,16 @@ async function getAccessToken(): Promise<string> {
 
   if (!res.ok) {
     const text = await res.text()
-    throw new Error(`PayPal auth failed: ${res.status} ${text}`)
+    // invalid_client almost always means one of: (1) PAYPAL_CLIENT_ID/SECRET
+    // are from the sandbox app but PAYPAL_ENV=live (or vice versa), (2) a
+    // copy-paste included extra whitespace or a missing character, or (3)
+    // the app's secret was regenerated in the PayPal dashboard and the env
+    // var here is stale. The PAYPAL_BASE_URL is included below specifically
+    // so you can see which environment it actually tried to hit.
+    throw new Error(
+      `PayPal auth failed against ${PAYPAL_BASE_URL} (PAYPAL_ENV="${process.env.PAYPAL_ENV ?? 'unset'}"): ${res.status} ${text}. ` +
+      `If this says invalid_client, check that PAYPAL_CLIENT_ID/PAYPAL_CLIENT_SECRET match the same sandbox-or-live app as PAYPAL_ENV.`
+    )
   }
 
   const data = await res.json()

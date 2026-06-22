@@ -132,6 +132,9 @@ export default function AdminDashboard() {
   const [showAddLead, setShowAddLead] = useState(false)
   const [addLeadForm, setAddLeadForm] = useState({ name: '', company: '', email: '', phone: '', website: '', industry: '', location: '', notes: '' })
 
+  // ── CHANGE PASSWORD ──────────────────────────────────────────
+  const [showChangePassword, setShowChangePassword] = useState(false)
+
   // ── CSV UPLOAD ───────────────────────────────────────────────
   const [csvText, setCsvText] = useState('')
   const [csvFileName, setCsvFileName] = useState('')
@@ -172,6 +175,18 @@ export default function AdminDashboard() {
     setSession(null)
     setLeads([])
     setSelected(null)
+  }
+
+  const handleChangePassword = async (currentPassword: string, newPassword: string): Promise<string | null> => {
+    const res = await fetch('/api/auth/change-password', {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ currentPassword, newPassword }),
+    })
+    const data = await res.json()
+    if (!res.ok) return data.error ?? 'Failed to change password'
+    return null
   }
 
   // ── PAGINATED LEADS FETCH ────────────────────────────────────
@@ -491,6 +506,9 @@ export default function AdminDashboard() {
               </div>
               <button onClick={handleLogout} className="text-[10px] text-[#8892A4] hover:text-red-400 transition-colors">Sign out</button>
             </div>
+            <button onClick={() => setShowChangePassword(true)} className="text-[10px] text-[#8892A4] hover:text-[#00F5D4] transition-colors block mb-3 -mt-1">
+              Change password
+            </button>
 
             {/* Nav between views */}
             <div className="flex gap-1 mb-3">
@@ -654,6 +672,14 @@ export default function AdminDashboard() {
           onClose={() => setShowAddLead(false)} loading={actionLoading === 'add-lead'}
         />
       )}
+
+      {/* Change Password modal */}
+      {showChangePassword && (
+        <ChangePasswordModal
+          onSubmit={handleChangePassword}
+          onClose={() => setShowChangePassword(false)}
+        />
+      )}
     </div>
   )
 }
@@ -693,6 +719,86 @@ function AddLeadModal({ form, setForm, onSubmit, onClose, loading }: any) {
             <span>{loading ? 'Adding...' : 'Add Lead'}</span>
           </button>
         </div>
+      </div>
+    </div>
+  )
+}
+
+// ── CHANGE PASSWORD MODAL ───────────────────────────────────────
+function ChangePasswordModal({ onSubmit, onClose }: { onSubmit: (current: string, next: string) => Promise<string | null>; onClose: () => void }) {
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmPassword, setConfirmPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+
+  const handleSubmit = async () => {
+    setError('')
+    if (!currentPassword || !newPassword) {
+      setError('Both fields are required')
+      return
+    }
+    if (newPassword.length < 8) {
+      setError('New password must be at least 8 characters')
+      return
+    }
+    if (newPassword !== confirmPassword) {
+      setError('Passwords do not match')
+      return
+    }
+    setLoading(true)
+    const err = await onSubmit(currentPassword, newPassword)
+    setLoading(false)
+    if (err) {
+      setError(err)
+      return
+    }
+    setSuccess(true)
+    setTimeout(onClose, 1500)
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div onClick={e => e.stopPropagation()} className="glass border border-white/10 rounded-2xl p-6 w-full max-w-sm">
+        <h3 className="font-display font-bold text-lg text-white mb-4">Change Password</h3>
+
+        {success ? (
+          <div className="text-center py-4">
+            <div className="text-3xl mb-2">✅</div>
+            <p className="text-sm text-[#8892A4]">Password changed. Other devices have been signed out.</p>
+          </div>
+        ) : (
+          <>
+            <div className="space-y-2.5">
+              <div>
+                <label className="text-[11px] text-[#8892A4] mb-1 block">Current Password</label>
+                <input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)}
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00F5D4]/30" />
+              </div>
+              <div>
+                <label className="text-[11px] text-[#8892A4] mb-1 block">New Password</label>
+                <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00F5D4]/30" />
+              </div>
+              <div>
+                <label className="text-[11px] text-[#8892A4] mb-1 block">Confirm New Password</label>
+                <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00F5D4]/30" />
+              </div>
+            </div>
+
+            {error && <p className="text-red-400 text-xs mt-3">{error}</p>}
+
+            <div className="flex gap-2 mt-5">
+              <button onClick={onClose} className="flex-1 px-4 py-2.5 bg-white/[0.06] rounded-lg text-sm text-white">Cancel</button>
+              <button onClick={handleSubmit} disabled={loading} className="flex-1 btn-primary justify-center disabled:opacity-50">
+                <span>{loading ? 'Saving...' : 'Change Password'}</span>
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   )
@@ -1060,7 +1166,7 @@ function LeadDetailPanel(props: any) {
                   </div>
                   <div className="glass border border-white/[0.06] rounded-xl p-4">
                     <h3 className="font-bold text-xs text-[#00F5D4] mb-3 uppercase tracking-wider">Activity Timeline</h3>
-                    {(selected.interactions ?? []).length === 0 ? <p className="text-[#8892A4] text-xs">No activity yet.</p> : (
+                    {selected.interactions.length === 0 ? <p className="text-[#8892A4] text-xs">No activity yet.</p> : (
                       <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
                         {[...selected.interactions].reverse().map(i => (
                           <div key={i.id} className="text-xs border-l-2 border-white/10 pl-3">
@@ -1325,7 +1431,7 @@ function LeadDetailPanel(props: any) {
                       <div className="glass border border-white/[0.06] rounded-xl p-4">
                         <div className="text-xs font-bold text-[#8892A4] mb-3 uppercase tracking-wider">Industry Benchmarks</div>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                          {Object.entries(researchProfile.industryBenchmarks as Record<string, string>).map(([k, v]) => (
+                          {Object.entries(researchProfile.industryBenchmarks).map(([k, v]) => (
                             <div key={k} className="text-center">
                               <div className="text-[10px] text-[#8892A4] mb-1">{k.replace(/([A-Z])/g, ' $1').trim()}</div>
                               <div className="font-bold text-sm text-white">{String(v)}</div>

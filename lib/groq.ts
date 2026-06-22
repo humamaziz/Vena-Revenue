@@ -1,18 +1,65 @@
-const GROQ_API_URL = 'https://api.groq.com/openai/v1/chat/completions'
-const MODEL = 'llama-3.3-70b-versatile'
+// Provider: Google Gemini (free tier). Function name is kept as
+// `callGroq` even though the backing provider is now Gemini, so none
+// of the ~10 call sites across app/api/admin/* need to change — only
+// this implementation does. If you'd rather rename it everywhere for
+// clarity, a project-wide find/replace of `callGroq` -> `callAI` is
+// safe since every call site just imports it from this one file.
+//
+// Gemini's request/response shape differs from Groq's OpenAI-style API:
+// - No single "messages" array — system instruction is separate from
+//   the user turn (systemInstruction vs contents)
+// - Response path is candidates[0].content.parts[0].text, not
+//   choices[0].message.content
+// - Token limit param is maxOutputTokens, not max_tokens
+//
+// Free tier model: gemini-1.5-flash. Generous free quota (as of this
+// writing: 15 req/min, 1M tokens/min, 1500 req/day) — more than enough
+// for a 5-person team's AI tooling. If you later want higher quality
+// over speed for the audit specifically, gemini-1.5-pro is a drop-in
+// MODEL swap below (also has a free tier, lower rate limits).
+const GEMINI_MODEL = 'gemini-1.5-flash'
+const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`
 
 export async function callGroq(system: string, user: string, temperature = 0.6, maxTokens = 2500): Promise<string> {
-  const apiKey = process.env.GROQ_API_KEY
-  if (!apiKey) throw new Error('GROQ_API_KEY is not set')
-  const res = await fetch(GROQ_API_URL, {
+  const apiKey = process.env.GEMINI_API_KEY
+  if (!apiKey) throw new Error('GEMINI_API_KEY is not set')
+
+  const res = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${apiKey}` },
-    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, temperature, messages: [{ role: 'system', content: system }, { role: 'user', content: user }] }),
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      systemInstruction: { parts: [{ text: system }] },
+      contents: [{ role: 'user', parts: [{ text: user }] }],
+      generationConfig: {
+        temperature,
+        maxOutputTokens: maxTokens,
+      },
+    }),
   })
-  if (!res.ok) { const t = await res.text(); throw new Error(`Groq ${res.status}: ${t}`) }
+
+  if (!res.ok) {
+    const t = await res.text()
+    throw new Error(`Gemini ${res.status}: ${t}`)
+  }
+
   const data = await res.json()
-  const content = data.choices?.[0]?.message?.content
-  if (!content) throw new Error('Groq returned empty content')
+
+  // A response with no candidates usually means the prompt or output
+  // was blocked by Gemini's safety filters (promptFeedback.blockReason)
+  // rather than a transport error, so this gets a clearer message than
+  // "Gemini returned empty content" would on its own.
+  const candidate = data.candidates?.[0]
+  if (!candidate) {
+    const blockReason = data.promptFeedback?.blockReason
+    throw new Error(
+      blockReason
+        ? `Gemini blocked this request: ${blockReason}`
+        : 'Gemini returned no candidates'
+    )
+  }
+
+  const content = candidate.content?.parts?.[0]?.text
+  if (!content) throw new Error('Gemini returned empty content')
   return content
 }
 

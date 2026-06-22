@@ -14,6 +14,9 @@ export async function POST(req: NextRequest) {
 
     const selectedTierKey = tier ?? 'entry'
     const selectedTier = tiers[selectedTierKey]
+    if (!selectedTier) {
+      return NextResponse.json({ error: `Unknown tier "${selectedTierKey}". Must be one of: ${Object.keys(tiers).join(', ')}` }, { status: 400 })
+    }
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? ''
 
     const order = await createPaypalOrder({
@@ -43,6 +46,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url: order.approveUrl, orderId: order.id })
   } catch (error) {
     console.error('[checkout]', error)
-    return NextResponse.json({ error: 'Failed to create checkout session' }, { status: 500 })
+    // Surface the real reason (e.g. PayPal credential/environment
+    // mismatch) instead of a generic message — this is an admin-facing
+    // checkout trigger, not a public error page, so the detail is safe
+    // and actively useful for diagnosing config issues.
+    const message = error instanceof Error ? error.message : 'Failed to create checkout session'
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 }
