@@ -19,7 +19,7 @@ type Status = 'checking' | 'confirmed' | 'pending'
 function SuccessContent() {
   const params = useSearchParams()
   const orderId = params.get('token') // PayPal appends ?token=<orderId> on return
-  const leadId = params.get('leadId')
+  const leadId = (params.get('leadId') ?? '').trim() || null
 
   const [status, setStatus] = useState<Status>('checking')
 

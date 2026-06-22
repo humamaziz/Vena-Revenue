@@ -12,33 +12,64 @@
 //   choices[0].message.content
 // - Token limit param is maxOutputTokens, not max_tokens
 //
-// Free tier model: gemini-1.5-flash. Generous free quota (as of this
-// writing: 15 req/min, 1M tokens/min, 1500 req/day) — more than enough
-// for a 5-person team's AI tooling. If you later want higher quality
-// over speed for the audit specifically, gemini-1.5-pro is a drop-in
-// MODEL swap below (also has a free tier, lower rate limits).
-const GEMINI_MODEL = 'gemini-1.5-flash'
-const GEMINI_API_URL = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`
+// MODEL NAME WARNING — Google retires Gemini model aliases on a
+// rolling basis (gemini-1.5-flash and gemini-2.0-flash are both gone
+// as of mid-2026). If this starts 404ing again, hit
+// https://generativelanguage.googleapis.com/v1beta/models?key=YOUR_KEY
+// to get the live list of model names your key can actually call, and
+// swap GEMINI_MODEL below — every prompt builder elsewhere in this file
+// is provider-agnostic and won't need to change.
+//
+// Current free-tier model: gemini-2.5-flash (~10 req/min, ~250 req/day
+// as of June 2026). For a small team's AI tooling this is comfortable;
+// if you start seeing 429s, gemini-2.5-flash-lite has a higher free
+// quota (~15 req/min, ~1,000 req/day) at slightly lower output quality
+// — same drop-in swap, just change the constant below.
+const GEMINI_MODEL = 'gemini-2.5-flash'
+// Tried only if the primary model above 404s (i.e. has been retired).
+// This means a future Google model deprecation degrades to "slightly
+// different output quality" instead of "every AI feature in the
+// dashboard breaks until someone notices and redeploys."
+const GEMINI_FALLBACK_MODEL = 'gemini-2.5-flash-lite'
+
+function geminiUrl(model: string): string {
+  return `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`
+}
 
 export async function callGroq(system: string, user: string, temperature = 0.6, maxTokens = 2500): Promise<string> {
   const apiKey = process.env.GEMINI_API_KEY
   if (!apiKey) throw new Error('GEMINI_API_KEY is not set')
 
-  const res = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: system }] },
-      contents: [{ role: 'user', parts: [{ text: user }] }],
-      generationConfig: {
-        temperature,
-        maxOutputTokens: maxTokens,
-      },
-    }),
+  const requestBody = JSON.stringify({
+    systemInstruction: { parts: [{ text: system }] },
+    contents: [{ role: 'user', parts: [{ text: user }] }],
+    generationConfig: {
+      temperature,
+      maxOutputTokens: maxTokens,
+    },
   })
+
+  const tryModel = async (model: string) => {
+    const res = await fetch(`${geminiUrl(model)}?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: requestBody,
+    })
+    return res
+  }
+
+  let res = await tryModel(GEMINI_MODEL)
+
+  if (res.status === 404) {
+    console.warn(`[gemini] ${GEMINI_MODEL} returned 404 (likely retired) — retrying with ${GEMINI_FALLBACK_MODEL}`)
+    res = await tryModel(GEMINI_FALLBACK_MODEL)
+  }
 
   if (!res.ok) {
     const t = await res.text()
+    // A 404 on BOTH models means GEMINI_MODEL and GEMINI_FALLBACK_MODEL
+    // above have both been retired — see the model-name warning in the
+    // comment block above for how to find the current valid name.
     throw new Error(`Gemini ${res.status}: ${t}`)
   }
 

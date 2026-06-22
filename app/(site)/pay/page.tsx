@@ -64,7 +64,7 @@ const tiers = [
 
 function PayPageContent() {
   const searchParams = useSearchParams()
-  const leadId = searchParams.get('leadId') ?? ''
+  const leadId = (searchParams.get('leadId') ?? '').trim()
   const [selected, setSelected] = useState('full')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')

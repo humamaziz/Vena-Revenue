@@ -1155,9 +1155,9 @@ function LeadDetailPanel(props: any) {
                       <div className="glass border border-white/[0.06] rounded-xl p-4">
                         <h3 className="font-bold text-xs text-[#F59E0B] mb-2 uppercase tracking-wider">Payment Link</h3>
                         <div className="bg-black/20 rounded-lg px-3 py-2 text-xs text-[#8892A4] font-mono break-all mb-2">
-                          {typeof window !== 'undefined' ? `${window.location.origin}/pay?leadId=${selected.id}` : `/pay?leadId=${selected.id}`}
+                          {typeof window !== 'undefined' ? `${window.location.origin}/pay?leadId=${encodeURIComponent(selected.id)}` : `/pay?leadId=${selected.id}`}
                         </div>
-                        <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/pay?leadId=${selected.id}`).then(() => onCopy('Payment link copied!')) }}
+                        <button onClick={() => { navigator.clipboard.writeText(`${window.location.origin}/pay?leadId=${encodeURIComponent(selected.id)}`).then(() => onCopy('Payment link copied!')) }}
                           className="px-3 py-1.5 bg-[#F59E0B]/10 border border-[#F59E0B]/30 rounded-lg text-xs text-[#F59E0B] font-bold">
                           Copy Payment Link
                         </button>
