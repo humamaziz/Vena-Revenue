@@ -23,8 +23,7 @@
 // Current free-tier model: gemini-2.5-flash (~10 req/min, ~250 req/day
 // as of June 2026). For a small team's AI tooling this is comfortable;
 // if you start seeing 429s, gemini-2.5-flash-lite has a higher free
-// quota (~15 req/min, ~1,000 req/day) at slightly lower output quality
-// — same drop-in swap, just change the constant below.
+// quota (~15 req/min, ~1,000 req/day) at slightly lower output quality.
 const GEMINI_MODEL = 'gemini-2.5-flash'
 // Tried only if the primary model above 404s (i.e. has been retired).
 // This means a future Google model deprecation degrades to "slightly
@@ -58,18 +57,43 @@ export async function callGroq(system: string, user: string, temperature = 0.6, 
     return res
   }
 
+  const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+  // 503 ("model overloaded", Gemini's own wording is literally "usually
+  // temporary") and 429 (rate limited) are worth one retry rather than
+  // failing the whole admin action on the first hiccup. Kept to a
+  // single short retry (not several) because each individual Gemini
+  // call can itself take 20-40s for the larger prompts (the 7000-token
+  // audit generation especially) — and every route here runs under
+  // Vercel's hard 60s function timeout (the free/Hobby plan caps this
+  // regardless of what maxDuration is configured to in vercel.json), so
+  // stacking multiple full-length retries risks the function itself
+  // timing out before Gemini ever gets a chance to fail cleanly.
   let res = await tryModel(GEMINI_MODEL)
 
-  if (res.status === 404) {
-    console.warn(`[gemini] ${GEMINI_MODEL} returned 404 (likely retired) — retrying with ${GEMINI_FALLBACK_MODEL}`)
+  if (res.status === 503 || res.status === 429) {
+    console.warn(`[gemini] ${GEMINI_MODEL} returned ${res.status} — retrying once after a short delay`)
+    await sleep(1200)
+    res = await tryModel(GEMINI_MODEL)
+  }
+
+  // A model under sustained capacity strain (503) or a retired model
+  // (404) are both "this model isn't going to answer right now" —
+  // worth falling through to the secondary model in both cases, not
+  // just 404. Single attempt on the fallback, no further retry — by
+  // this point three full-length calls may already have happened.
+  if (res.status === 404 || res.status === 503) {
+    console.warn(`[gemini] ${GEMINI_MODEL} unavailable (${res.status}) — falling back to ${GEMINI_FALLBACK_MODEL}`)
     res = await tryModel(GEMINI_FALLBACK_MODEL)
   }
 
   if (!res.ok) {
     const t = await res.text()
-    // A 404 on BOTH models means GEMINI_MODEL and GEMINI_FALLBACK_MODEL
-    // above have both been retired — see the model-name warning in the
-    // comment block above for how to find the current valid name.
+    // A 503/404 even after retries and the fallback model means Gemini
+    // itself is having a bad moment, or both GEMINI_MODEL and
+    // GEMINI_FALLBACK_MODEL above have been retired — see the
+    // model-name warning in the comment block above for how to find
+    // the current valid name.
     throw new Error(`Gemini ${res.status}: ${t}`)
   }
 

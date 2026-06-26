@@ -33,7 +33,20 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     })
 
     if (!lead) return NextResponse.json({ error: 'Lead not found' }, { status: 404 })
-    return NextResponse.json({ lead })
+
+    // For LEAD_GEN, the select above omits `interactions`/`ratings`
+    // entirely (Prisma simply won't include the key), but the dashboard
+    // UI unconditionally renders an activity timeline on every lead's
+    // Details tab regardless of role — there's no permission gate on
+    // that tab. Omitting the keys meant `selected.interactions` was
+    // `undefined` for this role even on a perfectly successful request,
+    // which crashed the whole page on `.length`. Returning empty arrays
+    // keeps the response shape consistent for every role; the UI itself
+    // still correctly shows "No activity yet" rather than real data
+    // this role isn't supposed to see.
+    const normalized = { ...lead, interactions: (lead as any).interactions ?? [], ratings: (lead as any).ratings ?? [] }
+
+    return NextResponse.json({ lead: normalized })
   } catch (error) {
     console.error('[admin/leads/:id]', error)
     return NextResponse.json({ error: 'Failed to fetch lead' }, { status: 500 })

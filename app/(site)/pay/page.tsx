@@ -8,8 +8,8 @@ const tiers = [
   {
     id: 'entry',
     name: 'Entry Diagnostic',
-    price: '$2,500',
-    amount: 2500,
+    price: '$799',
+    amount: 799,
     target: 'Local businesses under $500K revenue',
     delivery: '48 hours',
     includes: [
@@ -25,8 +25,8 @@ const tiers = [
   {
     id: 'full',
     name: 'Full Revenue Intelligence Report',
-    price: '$6,000',
-    amount: 6000,
+    price: '$1,299',
+    amount: 1299,
     target: 'Regional businesses $500K–$5M revenue',
     delivery: '48 hours',
     includes: [
@@ -44,8 +44,8 @@ const tiers = [
   {
     id: 'premium',
     name: 'Premium ARE Audit',
-    price: '$12,000',
-    amount: 12000,
+    price: '$1,699',
+    amount: 1699,
     target: 'Law firms, B2B SaaS, Enterprise',
     delivery: '5 business days',
     includes: [

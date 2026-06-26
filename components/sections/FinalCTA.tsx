@@ -27,7 +27,7 @@ export default function FinalCTA() {
             The businesses that win in the next three years will not be the ones with the biggest budgets. They will be the ones with the most intelligent infrastructure. By 2027, AI will initiate 95% of seller research workflows. The question is not whether to adapt - it is whether you adapt before or after your competitors do.
           </p>
           <p className="text-[#8892A4] text-lg mt-4 max-w-2xl mx-auto">
-            The audit starts at <span className="text-white font-bold">$2,500</span>. The leaks we find are worth multiples of that. The full build is delivered in <span className="text-white font-bold">60–90 days</span>. The audit fee is credited 100% toward the build.
+            The audit starts at <span className="text-white font-bold">$799</span>. The leaks we find are worth multiples of that. The full build is delivered in <span className="text-white font-bold">60–90 days</span>. The audit fee is credited 100% toward the build.
           </p>
         </AnimatedSection>
 

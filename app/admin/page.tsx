@@ -132,9 +132,6 @@ export default function AdminDashboard() {
   const [showAddLead, setShowAddLead] = useState(false)
   const [addLeadForm, setAddLeadForm] = useState({ name: '', company: '', email: '', phone: '', website: '', industry: '', location: '', notes: '' })
 
-  // ── CHANGE PASSWORD ──────────────────────────────────────────
-  const [showChangePassword, setShowChangePassword] = useState(false)
-
   // ── CSV UPLOAD ───────────────────────────────────────────────
   const [csvText, setCsvText] = useState('')
   const [csvFileName, setCsvFileName] = useState('')
@@ -177,18 +174,6 @@ export default function AdminDashboard() {
     setSelected(null)
   }
 
-  const handleChangePassword = async (currentPassword: string, newPassword: string): Promise<string | null> => {
-    const res = await fetch('/api/auth/change-password', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ currentPassword, newPassword }),
-    })
-    const data = await res.json()
-    if (!res.ok) return data.error ?? 'Failed to change password'
-    return null
-  }
-
   // ── PAGINATED LEADS FETCH ────────────────────────────────────
   const fetchLeads = useCallback(async () => {
     if (!session) return
@@ -226,27 +211,53 @@ export default function AdminDashboard() {
     const res = await fetch(`/api/admin/leads/${id}`, { credentials: 'include' })
     if (!res.ok) return
     const data = await res.json()
-    setSelected(data.lead)
+    // Guard against a 200 response with a missing/malformed `lead` field
+    // (e.g. a server-side bug) overwriting a perfectly good `selected`
+    // with `undefined` and reintroducing the same class of crash this
+    // whole fix addresses.
+    if (data?.lead) setSelected(data.lead)
   }, [])
 
   const selectLead = async (lead: Lead) => {
     setView('pipeline')
-    // Fetch full detail (list view omits interactions/ratings for scale)
-    const res = await fetch(`/api/admin/leads/${lead.id}`, { credentials: 'include' })
-    const full = res.ok ? (await res.json()).lead : lead
-    setSelected(full)
-    setAuditEdit(full.audit ?? '')
-    setNotesEdit(full.notes ?? '')
-    setLoomEdit(full.loomUrl ?? '')
-    setPptEdit(full.pptUrl ?? '')
-    setFollowupDrafts(''); setSalesAnalysis('')
-    setObjectionReply(''); setObjectionInput(''); setTestimonialDraft('')
-    setQuickDraft(''); setQuickInstruction(''); setLoomScript('')
-    setOutreachEmail(''); setResearchProfile(null); setTab('details')
-    setOwnerName(full.name.split(' ')[0])
-    const mine = full.ratings?.find((r: RatingEntry) => r.ratedById === session?.userId)
-    setMyRating(mine?.rating ?? 0)
-    setRatingNotes('')
+    // Fetch full detail (list view omits interactions/ratings for scale,
+    // and for some roles also omits audit/notes/payment fields — see
+    // LEAD_SAFE_SELECT vs the restricted-role select in the leads list
+    // route). Previously, a failed fetch here fell back to the
+    // paginated list-row `lead` object instead, which never has
+    // `interactions` — that's what was crashing the dashboard with
+    // "Cannot read properties of undefined (reading 'length')" the
+    // moment the detail panel tried to render the activity timeline.
+    // A failed detail fetch must NOT silently render an incompatible
+    // shape; show an error and leave nothing selected instead.
+    try {
+      const res = await fetch(`/api/admin/leads/${lead.id}`, { credentials: 'include' })
+      if (res.status === 401) { setSession(null); return }
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        showToast(data.error ?? 'Failed to load this lead', 'error')
+        setSelected(null)
+        return
+      }
+      const data = await res.json()
+      const full: Lead = data.lead
+      setSelected(full)
+      setAuditEdit(full.audit ?? '')
+      setNotesEdit(full.notes ?? '')
+      setLoomEdit(full.loomUrl ?? '')
+      setPptEdit(full.pptUrl ?? '')
+      setFollowupDrafts(''); setSalesAnalysis('')
+      setObjectionReply(''); setObjectionInput(''); setTestimonialDraft('')
+      setQuickDraft(''); setQuickInstruction(''); setLoomScript('')
+      setOutreachEmail(''); setResearchProfile(null); setTab('details')
+      setOwnerName(full.name.split(' ')[0])
+      const mine = full.ratings?.find((r: RatingEntry) => r.ratedById === session?.userId)
+      setMyRating(mine?.rating ?? 0)
+      setRatingNotes('')
+    } catch {
+      showToast('Network error loading this lead', 'error')
+      setSelected(null)
+    }
   }
 
   // ── GENERIC ADMIN API CALLER (cookie auth) ──────────────────
@@ -506,9 +517,6 @@ export default function AdminDashboard() {
               </div>
               <button onClick={handleLogout} className="text-[10px] text-[#8892A4] hover:text-red-400 transition-colors">Sign out</button>
             </div>
-            <button onClick={() => setShowChangePassword(true)} className="text-[10px] text-[#8892A4] hover:text-[#00F5D4] transition-colors block mb-3 -mt-1">
-              Change password
-            </button>
 
             {/* Nav between views */}
             <div className="flex gap-1 mb-3">
@@ -672,14 +680,6 @@ export default function AdminDashboard() {
           onClose={() => setShowAddLead(false)} loading={actionLoading === 'add-lead'}
         />
       )}
-
-      {/* Change Password modal */}
-      {showChangePassword && (
-        <ChangePasswordModal
-          onSubmit={handleChangePassword}
-          onClose={() => setShowChangePassword(false)}
-        />
-      )}
     </div>
   )
 }
@@ -719,86 +719,6 @@ function AddLeadModal({ form, setForm, onSubmit, onClose, loading }: any) {
             <span>{loading ? 'Adding...' : 'Add Lead'}</span>
           </button>
         </div>
-      </div>
-    </div>
-  )
-}
-
-// ── CHANGE PASSWORD MODAL ───────────────────────────────────────
-function ChangePasswordModal({ onSubmit, onClose }: { onSubmit: (current: string, next: string) => Promise<string | null>; onClose: () => void }) {
-  const [currentPassword, setCurrentPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-
-  const handleSubmit = async () => {
-    setError('')
-    if (!currentPassword || !newPassword) {
-      setError('Both fields are required')
-      return
-    }
-    if (newPassword.length < 8) {
-      setError('New password must be at least 8 characters')
-      return
-    }
-    if (newPassword !== confirmPassword) {
-      setError('Passwords do not match')
-      return
-    }
-    setLoading(true)
-    const err = await onSubmit(currentPassword, newPassword)
-    setLoading(false)
-    if (err) {
-      setError(err)
-      return
-    }
-    setSuccess(true)
-    setTimeout(onClose, 1500)
-  }
-
-  return (
-    <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4" onClick={onClose}>
-      <div onClick={e => e.stopPropagation()} className="glass border border-white/10 rounded-2xl p-6 w-full max-w-sm">
-        <h3 className="font-display font-bold text-lg text-white mb-4">Change Password</h3>
-
-        {success ? (
-          <div className="text-center py-4">
-            <div className="text-3xl mb-2">✅</div>
-            <p className="text-sm text-[#8892A4]">Password changed. Other devices have been signed out.</p>
-          </div>
-        ) : (
-          <>
-            <div className="space-y-2.5">
-              <div>
-                <label className="text-[11px] text-[#8892A4] mb-1 block">Current Password</label>
-                <input type="password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)}
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00F5D4]/30" />
-              </div>
-              <div>
-                <label className="text-[11px] text-[#8892A4] mb-1 block">New Password</label>
-                <input type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)}
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00F5D4]/30" />
-              </div>
-              <div>
-                <label className="text-[11px] text-[#8892A4] mb-1 block">Confirm New Password</label>
-                <input type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-                  className="w-full bg-white/[0.04] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-[#00F5D4]/30" />
-              </div>
-            </div>
-
-            {error && <p className="text-red-400 text-xs mt-3">{error}</p>}
-
-            <div className="flex gap-2 mt-5">
-              <button onClick={onClose} className="flex-1 px-4 py-2.5 bg-white/[0.06] rounded-lg text-sm text-white">Cancel</button>
-              <button onClick={handleSubmit} disabled={loading} className="flex-1 btn-primary justify-center disabled:opacity-50">
-                <span>{loading ? 'Saving...' : 'Change Password'}</span>
-              </button>
-            </div>
-          </>
-        )}
       </div>
     </div>
   )
@@ -1166,9 +1086,9 @@ function LeadDetailPanel(props: any) {
                   </div>
                   <div className="glass border border-white/[0.06] rounded-xl p-4">
                     <h3 className="font-bold text-xs text-[#00F5D4] mb-3 uppercase tracking-wider">Activity Timeline</h3>
-                    {selected.interactions.length === 0 ? <p className="text-[#8892A4] text-xs">No activity yet.</p> : (
+                    {(selected.interactions ?? []).length === 0 ? <p className="text-[#8892A4] text-xs">No activity yet.</p> : (
                       <div className="space-y-3 max-h-[500px] overflow-y-auto pr-1">
-                        {[...selected.interactions].reverse().map(i => (
+                        {[...(selected.interactions ?? [])].reverse().map(i => (
                           <div key={i.id} className="text-xs border-l-2 border-white/10 pl-3">
                             <div className="flex items-center gap-2 mb-0.5">
                               <span className="font-bold text-[#8892A4] uppercase text-[10px]">{i.type}</span>
@@ -1444,7 +1364,7 @@ function LeadDetailPanel(props: any) {
                       <div className="glass border border-white/[0.06] rounded-xl p-4">
                         <div className="text-xs font-bold text-[#8892A4] mb-2 uppercase tracking-wider">Top Competitors</div>
                         <div className="flex flex-wrap gap-2">
-                          {researchProfile.topCompetitors.map((comp, i) => (
+                          {(researchProfile.topCompetitors ?? []).map((comp, i) => (
   <div key={i} className="p-3 border border-white/10 rounded mb-2">
     <p className="text-white font-semibold">{comp.name}</p>
     <p className="text-sm text-[#8892A4]">
@@ -1462,11 +1382,11 @@ function LeadDetailPanel(props: any) {
                       <div className="grid md:grid-cols-2 gap-4">
                         <div className="glass border border-green-500/20 rounded-xl p-4">
                           <div className="text-xs font-bold text-green-400 mb-2 uppercase tracking-wider">Strength Signals</div>
-                          {researchProfile.strengthSignals.map((s, i) => <div key={i} className="flex items-start gap-2 text-sm mb-1"><span className="text-green-400 flex-shrink-0">+</span><span className="text-[#8892A4]">{s}</span></div>)}
+                          {(researchProfile.strengthSignals ?? []).map((s, i) => <div key={i} className="flex items-start gap-2 text-sm mb-1"><span className="text-green-400 flex-shrink-0">+</span><span className="text-[#8892A4]">{s}</span></div>)}
                         </div>
                         <div className="glass border border-red-500/20 rounded-xl p-4">
                           <div className="text-xs font-bold text-red-400 mb-2 uppercase tracking-wider">Red Flags</div>
-                          {researchProfile.redFlags.map((s, i) => <div key={i} className="flex items-start gap-2 text-sm mb-1"><span className="text-red-400 flex-shrink-0">!</span><span className="text-[#8892A4]">{s}</span></div>)}
+                          {(researchProfile.redFlags ?? []).map((s, i) => <div key={i} className="flex items-start gap-2 text-sm mb-1"><span className="text-red-400 flex-shrink-0">!</span><span className="text-[#8892A4]">{s}</span></div>)}
                         </div>
                       </div>
 
