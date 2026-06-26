@@ -10,7 +10,7 @@ const phases = [
     tagline: 'Know exactly where you are bleeding — in dollars.',
     desc: 'We evaluate your business across our 8-Pillar Framework, scoring your conversion architecture, GEO intelligence, and backend system bottlenecks. Every gap is documented with a dollar estimate attached. In 48 hours, you have a complete map of every revenue leak - prioritized by financial impact.',
     pillars: ['Conversion Architecture', 'SEO + AI SEO Intelligence', 'Technical Performance', 'AI Integration Opportunity', 'Booking + Lead System', 'Branding + Visual Design', 'Competitive + Market Position', 'Psychology + Copy Audit'],
-    pricing: 'From $2,500 - 100% credited toward build',
+    pricing: 'From $799 - 100% credited toward build',
     color: '#00F5D4',
     icon: '🔬',
   },
@@ -20,7 +20,7 @@ const phases = [
     tagline: 'We do not build pages. We build infrastructure.',
     desc: 'We rebuild your web environment from the ground up using headless Next.js architecture, entity-graph schema injection, and MCP server-based AI agent pipelines. The result is a site that loads instantly, appears in AI search results, and autonomously qualifies, responds to, and reactivates leads - without requiring manual intervention from your team.',
     pillars: ['Headless Next.js decoupled architecture', 'Custom JSON-LD entity graph injection', 'MCP server AI agent pipeline deployment', 'CRM integration + automated intake flows', 'AI-parseable semantic markup layers', 'Core Web Vitals optimization', 'Ghosted lead reactivation system', 'Response automation under 90 seconds'],
-    pricing: 'Standard: $25,000 · Mid-Market: $24,000 net · Enterprise: $35,000-$63,000 net',
+    pricing: 'Standard: $3,000 · Mid-Market: $5,000 net · Enterprise: $8,000 net',
     color: '#7B61FF',
     icon: '⚙️',
   },
@@ -37,9 +37,9 @@ const phases = [
 ]
 
 const buildTiers = [
-  { name: 'Standard Build', for: 'Entry Diagnostic clients', investment: '$25,000 flat', note: '$2,500 audit credited toward total' },
-  { name: 'Mid-Market Build', for: 'Full Report clients', investment: '$24,000 net balance', note: 'Total value $30,000 - $6,000 report fee credited if signed within 14 days' },
-  { name: 'Enterprise Build', for: 'ARE Audit clients', investment: '$35,000-$63,000 net', note: 'Total value $50,000-$75,000 - $12K-$15K premium diagnostic fee credited if signed within 14 days' },
+  { name: 'Standard Build', for: 'Entry Diagnostic clients', investment: '$2,201 flat', note: '$799 audit credited toward total' },
+  { name: 'Mid-Market Build', for: 'Full Report clients', investment: '$3,701 net balance', note: 'Total value $5,000 - $1,299 report fee credited if signed within 14 days' },
+  { name: 'Enterprise Build', for: 'ARE Audit clients', investment: '$6,301 net', note: 'Total value $8,000 - $1,699 premium diagnostic fee credited if signed within 14 days' },
 ]
 
 export default function ServicesPage() {
